@@ -5,10 +5,8 @@ These tests validate end-to-end scenarios:
 - Step 3: Search (in file, in files, by name, recent files)
 - Step 4: Read (entire, lines, tail, batch)
 """
+
 import pytest
-import tempfile
-import os
-from pathlib import Path
 
 
 class TestNavigationWorkflow:
@@ -26,7 +24,10 @@ class TestNavigationWorkflow:
         # Sort by size descending
         result_sorted = list_directory(path=".", sort_by="size", order="desc")
         if len(result_sorted["entries"]) >= 2:
-            assert result_sorted["entries"][0]["size"] >= result_sorted["entries"][1]["size"]
+            assert (
+                result_sorted["entries"][0]["size"]
+                >= result_sorted["entries"][1]["size"]
+            )
 
     def test_show_tree_with_depth_limit(self):
         """Test showing directory tree with depth limit."""
@@ -60,11 +61,7 @@ class TestSearchWorkflow:
         from agent_mcp.tools.search import search_in_files
 
         # Search Python files for import statements
-        result = search_in_files(
-            query="import",
-            file_pattern="*.py",
-            path="agent_mcp"
-        )
+        result = search_in_files(query="import", file_pattern="*.py", path="agent_mcp")
         assert result["files_searched"] >= 0
         assert isinstance(result["timed_out"], bool)
 
@@ -83,9 +80,7 @@ class TestSearchWorkflow:
 
         # Find files modified in last 24 hours
         result = find_recently_modified_files(
-            hours_ago=24,
-            path=".",
-            file_pattern="*.py"
+            hours_ago=24, path=".", file_pattern="*.py"
         )
         assert result["total_found"] >= 0
         assert isinstance(result["files"], list)
@@ -109,13 +104,9 @@ class TestReadWorkflow:
         from agent_mcp.tools.read import read_file_lines
 
         # Read first 10 lines
-        result = read_file_lines(
-            file_path="pyproject.toml",
-            start_line=1,
-            end_line=10
-        )
+        result = read_file_lines(file_path="pyproject.toml", start_line=1, end_line=10)
         assert result["line_count"] <= 10
-        assert result["is_partial"] == True
+        assert result["is_partial"]
         assert result["total_lines"] >= result["line_count"]
 
     def test_read_file_tail_workflow(self):
@@ -142,7 +133,7 @@ class TestCompleteAgentWorkflow:
 
     def test_analyze_new_project_workflow(self):
         """Simulate agent analyzing a new project (quickstart complete workflow)."""
-        from agent_mcp.tools.navigation import show_tree, list_directory
+        from agent_mcp.tools.navigation import show_tree
         from agent_mcp.tools.search import find_files_by_name, search_in_files
         from agent_mcp.tools.read import read_files
 
@@ -162,8 +153,142 @@ class TestCompleteAgentWorkflow:
 
         # Step 4: Search for imports
         search_result = search_in_files(
-            query="import",
-            file_pattern="*.py",
-            path="agent_mcp"
+            query="import", file_pattern="*.py", path="agent_mcp"
         )
         assert isinstance(search_result["matches"], list)
+
+
+@pytest.mark.integration
+class TestContextFileWorkflow:
+    """Integration tests for read_project_context tool workflow."""
+
+    def test_read_context_files_full_workflow(self, tmp_path, monkeypatch):
+        """Test full workflow: create context files, read them, verify response."""
+        from agent_mcp.tools.navigation import read_project_context
+        from agent_mcp.config import ProjectConfig
+
+        # Step 1: Setup - Create both context files
+        agents_content = """# Universal Agent Instructions
+
+## Project Guidelines
+- Follow TDD principles
+- Use type hints
+- Write comprehensive tests
+
+## Code Style
+- PEP 8 compliant
+- Maximum line length: 100
+- Use pathlib for file operations
+"""
+
+        claude_content = """# Claude Code Configuration
+
+## Response Style
+- Be concise and direct
+- Provide code examples
+- Explain complex concepts
+
+## Project Context
+This is a Python MCP server using fastmcp framework.
+Focus on security and performance.
+"""
+
+        (tmp_path / "AGENTS.md").write_text(agents_content, encoding="utf-8")
+        (tmp_path / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
+
+        # Mock PROJECT_ROOT
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+
+        # Step 2: Call read_project_context
+        result = read_project_context()
+
+        # Step 3: Verify response structure
+        assert "files" in result
+        assert "message" in result
+        assert "total_found" in result
+
+        # Step 4: Verify both files returned
+        assert len(result["files"]) == 2
+        assert result["total_found"] == 2
+        assert result["message"] == "Found 2 of 2 context files"
+
+        # Step 5: Verify AGENTS.md comes first (priority order)
+        assert result["files"][0]["filename"] == "AGENTS.md"
+        assert result["files"][0]["exists"] is True
+        assert result["files"][0]["readable"] is True
+        assert result["files"][0]["content"] == agents_content
+
+        # Step 6: Verify CLAUDE.md comes second
+        assert result["files"][1]["filename"] == "CLAUDE.md"
+        assert result["files"][1]["exists"] is True
+        assert result["files"][1]["readable"] is True
+        assert result["files"][1]["content"] == claude_content
+
+        # Step 7: Verify metadata
+        assert (
+            result["files"][0]["size_bytes"] == (tmp_path / "AGENTS.md").stat().st_size
+        )
+        assert (
+            result["files"][1]["size_bytes"] == (tmp_path / "CLAUDE.md").stat().st_size
+        )
+        assert result["files"][0]["error"] is None
+        assert result["files"][1]["error"] is None
+
+    def test_context_files_missing_graceful_handling(self, tmp_path, monkeypatch):
+        """Test graceful handling when no context files exist."""
+        from agent_mcp.tools.navigation import read_project_context
+        from agent_mcp.config import ProjectConfig
+
+        # Setup: Empty directory (no context files)
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+
+        # Execute
+        result = read_project_context()
+
+        # Verify graceful response
+        assert "files" in result
+        assert "message" in result
+        assert "total_found" in result
+
+        assert len(result["files"]) == 2
+        assert result["total_found"] == 0
+        assert "No context files found" in result["message"]
+
+        # Both files should be reported as not existing
+        for file_info in result["files"]:
+            assert file_info["exists"] is False
+            assert file_info["readable"] is False
+            assert file_info["content"] is None
+            assert file_info["size_bytes"] is None
+            assert file_info["error"] is None
+
+    def test_context_files_partial_discovery(self, tmp_path, monkeypatch):
+        """Test when only one context file exists."""
+        from agent_mcp.tools.navigation import read_project_context
+        from agent_mcp.config import ProjectConfig
+
+        # Setup: Create only AGENTS.md
+        agents_content = "# Project-wide agent instructions\n"
+        (tmp_path / "AGENTS.md").write_text(agents_content, encoding="utf-8")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+
+        # Execute
+        result = read_project_context()
+
+        # Verify partial discovery
+        assert result["total_found"] == 1
+        assert result["message"] == "Found 1 of 2 context files"
+
+        # AGENTS.md found
+        assert result["files"][0]["filename"] == "AGENTS.md"
+        assert result["files"][0]["exists"] is True
+        assert result["files"][0]["content"] == agents_content
+
+        # CLAUDE.md not found
+        assert result["files"][1]["filename"] == "CLAUDE.md"
+        assert result["files"][1]["exists"] is False
+        assert result["files"][1]["content"] is None

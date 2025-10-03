@@ -135,7 +135,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Agent MCP specific files
+# Context MCP specific files
 agent_mcp.log
 agent_mcp.log.*
 

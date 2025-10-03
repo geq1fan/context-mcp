@@ -1,13 +1,16 @@
-"""Logging configuration for Agent MCP server.
+"""Logging configuration for Context MCP server.
 
 Implements TimedRotatingFileHandler with 7-day retention period.
 """
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 
-def setup_logging(log_file: str = "agent_mcp.log", level: int = logging.INFO) -> logging.Logger:
+def setup_logging(
+    log_file: str = "agent_mcp.log", level: int = logging.INFO
+) -> logging.Logger:
     """Configure logging with timed rotation.
 
     Args:
@@ -33,16 +36,16 @@ def setup_logging(log_file: str = "agent_mcp.log", level: int = logging.INFO) ->
     # Configure timed rotating file handler (daily rotation, 7 days retention)
     file_handler = TimedRotatingFileHandler(
         filename=log_file,
-        when='D',           # Daily rotation
-        interval=1,         # Every 1 day
-        backupCount=7,      # Keep 7 days of logs
-        encoding='utf-8'
+        when="D",  # Daily rotation
+        interval=1,  # Every 1 day
+        backupCount=7,  # Keep 7 days of logs
+        encoding="utf-8",
     )
 
     # Set format
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     file_handler.setFormatter(formatter)
 

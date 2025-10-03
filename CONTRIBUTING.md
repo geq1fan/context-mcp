@@ -1,6 +1,6 @@
-# Contributing to Agent MCP
+# Contributing to Context MCP
 
-Thank you for your interest in contributing to Agent MCP! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Context MCP! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -27,12 +27,12 @@ This project adheres to a simple code of conduct:
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/your-username/agent-mcp.git
-   cd agent-mcp
+   git clone https://github.com/your-username/context-mcp.git
+   cd context-mcp
    ```
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/original/agent-mcp.git
+   git remote add upstream https://github.com/geq1fan/context-mcp.git
    ```
 
 ## Development Setup
@@ -335,4 +335,4 @@ Contributors will be recognized in:
 - GitHub contributors list
 - Release notes (for significant contributions)
 
-Thank you for contributing to Agent MCP! 🎉
+Thank you for contributing to Context MCP! 🎉

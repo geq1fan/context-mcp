@@ -1,39 +1,38 @@
-"""FastMCP server entry point for Agent MCP.
+"""FastMCP server entry point for Context MCP.
 
-Registers all 10 MCP tools and starts the server.
+Registers all 11 MCP tools and starts the server.
 """
+
 from fastmcp import FastMCP
-from agent_mcp.config import load_config, config
-from agent_mcp.utils.logger import setup_logging, logger
-from agent_mcp.tools.navigation import list_directory, show_tree
+from agent_mcp.config import load_config
+from agent_mcp.utils.logger import setup_logging
+from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
 from agent_mcp.tools.search import (
     search_in_file,
     search_in_files,
     find_files_by_name,
-    find_recently_modified_files
+    find_recently_modified_files,
 )
 from agent_mcp.tools.read import (
     read_entire_file,
     read_file_lines,
     read_file_tail,
-    read_files
+    read_files,
 )
 
 
 # Initialize FastMCP server
-mcp = FastMCP("agent-mcp")
+mcp = FastMCP("context-mcp")
 
 
 # ============================================================================
 # Register Navigation Tools
 # ============================================================================
 
+
 @mcp.tool()
 def mcp_list_directory(
-    path: str = ".",
-    sort_by: str = "name",
-    order: str = "asc",
-    limit: int = -1
+    path: str = ".", sort_by: str = "name", order: str = "asc", limit: int = -1
 ) -> dict:
     """List directory contents with sorting and limiting.
 
@@ -46,7 +45,14 @@ def mcp_list_directory(
     Returns:
         dict: entries (list), total (int), truncated (bool)
     """
-    return list_directory(path, sort_by, order, limit)
+    from typing import cast, Literal
+
+    return list_directory(
+        path,
+        cast(Literal["name", "size", "time"], sort_by),
+        cast(Literal["asc", "desc"], order),
+        limit,
+    )
 
 
 @mcp.tool()
@@ -63,16 +69,33 @@ def mcp_show_tree(path: str = ".", max_depth: int = 3) -> dict:
     return show_tree(path, max_depth)
 
 
+@mcp.tool()
+def mcp_read_project_context() -> dict:
+    """Read project context files (AGENTS.md, CLAUDE.md) from PROJECT_ROOT.
+
+    Discovers and reads AI agent context files to understand project-specific
+    conventions, coding standards, and behavioral guidelines.
+
+    Returns:
+        dict: {
+            "files": List[dict],    # Context file metadata and content
+            "message": str,          # Human-readable result summary
+            "total_found": int       # Count of readable files
+        }
+
+    Raises:
+        RuntimeError: If PROJECT_ROOT is not set or invalid
+    """
+    return read_project_context()
+
+
 # ============================================================================
 # Register Search Tools
 # ============================================================================
 
+
 @mcp.tool()
-def mcp_search_in_file(
-    query: str,
-    file_path: str,
-    use_regex: bool = False
-) -> dict:
+def mcp_search_in_file(query: str, file_path: str, use_regex: bool = False) -> dict:
     """Search for text in a single file.
 
     Args:
@@ -93,7 +116,7 @@ def mcp_search_in_files(
     path: str = ".",
     use_regex: bool = False,
     exclude_query: str = "",
-    timeout: int = 60
+    timeout: int = 60,
 ) -> dict:
     """Search for text across multiple files.
 
@@ -127,9 +150,7 @@ def mcp_find_files_by_name(name_pattern: str, path: str = ".") -> dict:
 
 @mcp.tool()
 def mcp_find_recently_modified_files(
-    hours_ago: int,
-    path: str = ".",
-    file_pattern: str = "*"
+    hours_ago: int, path: str = ".", file_pattern: str = "*"
 ) -> dict:
     """Find files modified within the last N hours.
 
@@ -147,6 +168,7 @@ def mcp_find_recently_modified_files(
 # ============================================================================
 # Register Read Tools
 # ============================================================================
+
 
 @mcp.tool()
 def mcp_read_entire_file(file_path: str) -> dict:
@@ -207,6 +229,7 @@ def mcp_read_files(file_paths: list[str]) -> dict:
 # Server Entry Point
 # ============================================================================
 
+
 def main():
     """Main entry point for uvx execution."""
     # Setup logging
@@ -215,7 +238,7 @@ def main():
     try:
         # Load configuration
         cfg = load_config()
-        logger_instance.info(f"Agent MCP Server starting...")
+        logger_instance.info("Context MCP Server starting...")
         logger_instance.info(f"Project root: {cfg.root_path}")
         logger_instance.info(f"Search timeout: {cfg.search_timeout}s")
         logger_instance.info(f"Log retention: {cfg.log_retention_days} days")

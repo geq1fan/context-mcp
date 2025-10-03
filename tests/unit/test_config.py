@@ -1,7 +1,7 @@
 """Unit tests for configuration loading and validation."""
+
 import pytest
 import os
-from pathlib import Path
 from agent_mcp.config import ProjectConfig, load_config
 
 
@@ -11,9 +11,7 @@ class TestProjectConfig:
     def test_valid_config_creation(self, tmp_path):
         """Test creating valid ProjectConfig."""
         config = ProjectConfig(
-            root_path=tmp_path,
-            search_timeout=30,
-            log_retention_days=5
+            root_path=tmp_path, search_timeout=30, log_retention_days=5
         )
 
         assert config.root_path == tmp_path

@@ -2,12 +2,13 @@
 
 Tests for: search_in_file, search_in_files, find_files_by_name, find_recently_modified_files
 """
+
 import pytest
 from agent_mcp.tools.search import (
     search_in_file,
     search_in_files,
     find_files_by_name,
-    find_recently_modified_files
+    find_recently_modified_files,
 )
 
 
@@ -48,13 +49,19 @@ class TestSearchInFileContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             search_in_file(query="test", file_path="../../etc/passwd")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_file_not_found(self):
         """Test FILE_NOT_FOUND error."""
         with pytest.raises(Exception) as exc_info:
             search_in_file(query="test", file_path="nonexistent_file.txt")
-        assert "FILE_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "FILE_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 class TestSearchInFilesContract:
@@ -108,7 +115,10 @@ class TestSearchInFilesContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             search_in_files(query="test", path="../../etc")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
 
 class TestFindFilesByNameContract:
@@ -145,7 +155,10 @@ class TestFindFilesByNameContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             find_files_by_name(name_pattern="*.txt", path="../../etc")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
 
 class TestFindRecentlyModifiedFilesContract:
@@ -190,4 +203,7 @@ class TestFindRecentlyModifiedFilesContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             find_recently_modified_files(hours_ago=24, path="../../etc")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )

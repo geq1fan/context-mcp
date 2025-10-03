@@ -1,4 +1,4 @@
-# Agent MCP Configuration Guide
+# Context MCP Configuration Guide
 
 ## Quick Start Configuration
 
@@ -9,14 +9,14 @@
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Step 2**: Add agent-mcp configuration:
+**Step 2**: Add context-mcp configuration:
 
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/absolute/path/to/your/project",
         "SEARCH_TIMEOUT": "60"
@@ -37,9 +37,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/path/to/project"
       }
@@ -53,9 +53,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/path/to/project",
         "SEARCH_TIMEOUT": "120"
@@ -70,10 +70,10 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp-dev": {
+    "context-mcp-dev": {
       "command": "uv",
       "args": ["run", "python", "-m", "agent_mcp.server"],
-      "cwd": "/path/to/agent-mcp-repo",
+      "cwd": "/path/to/context-mcp-repo",
       "env": {
         "PROJECT_ROOT": "/path/to/test/project",
         "SEARCH_TIMEOUT": "60"
@@ -90,21 +90,21 @@
   "mcpServers": {
     "my-backend": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/projects/backend-api"
       }
     },
     "my-frontend": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/projects/frontend-app"
       }
     },
     "my-docs": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/projects/documentation",
         "SEARCH_TIMEOUT": "30"
@@ -121,9 +121,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/Users/username/Projects/my-project"
       }
@@ -138,9 +138,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "C:/Users/username/Projects/my-project"
       }
@@ -153,9 +153,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "C:\\Users\\username\\Projects\\my-project"
       }
@@ -169,9 +169,9 @@
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/home/username/projects/my-project"
       }
@@ -196,10 +196,10 @@
 export PROJECT_ROOT=/path/to/project
 
 # Test with uvx
-uvx agent-mcp
+uvx context-mcp
 
 # Or test with uv (local development)
-cd /path/to/agent-mcp
+cd /path/to/context-mcp
 uv run python -m agent_mcp.server
 ```
 
@@ -218,13 +218,13 @@ After configuration, try these commands in Claude:
 
 ```
 # List root directory
-Please use agent-mcp to list files in the root directory
+Please use context-mcp to list files in the root directory
 
 # Search for text
-Please use agent-mcp to search for "import" in Python files
+Please use context-mcp to search for "import" in Python files
 
 # Read a file
-Please use agent-mcp to read the README.md file
+Please use context-mcp to read the README.md file
 ```
 
 ## Common Configuration Mistakes
@@ -305,9 +305,9 @@ Please use agent-mcp to read the README.md file
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/path/to/project",
         "SEARCH_TIMEOUT": "60",
@@ -325,7 +325,7 @@ Please use agent-mcp to read the README.md file
 1. Validate JSON syntax: Use [jsonlint.com](https://jsonlint.com)
 2. Check file permissions: Ensure config file is readable
 3. Verify paths: Use absolute paths, not relative
-4. Test command: Run `uvx agent-mcp` in terminal
+4. Test command: Run `uvx context-mcp` in terminal
 
 ### Issue: Cannot Read Files
 
@@ -348,7 +348,7 @@ Please use agent-mcp to read the README.md file
 {
   "command": "uv",
   "args": ["run", "python", "-m", "agent_mcp.server"],
-  "cwd": "/path/to/agent-mcp-dev"
+  "cwd": "/path/to/context-mcp-dev"
 }
 ```
 
@@ -356,7 +356,7 @@ Please use agent-mcp to read the README.md file
 ```json
 {
   "command": "uvx",
-  "args": ["agent-mcp"]
+  "args": ["context-mcp"]
 }
 ```
 

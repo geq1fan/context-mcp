@@ -1,0 +1,407 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "read_project_context MCP Tool Contract",
+  "description": "Contract definition for the read_project_context MCP tool that discovers and reads AI agent context files (AGENTS.md and CLAUDE.md) from PROJECT_ROOT",
+  "version": "1.0.0",
+  "tool": {
+    "name": "read_project_context",
+    "category": "Navigation",
+    "description": "Read project context files (AGENTS.md, CLAUDE.md) from PROJECT_ROOT to understand project conventions and guidelines",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "description": "No input parameters required - automatically checks PROJECT_ROOT for context files"
+    },
+    "output_schema": {
+      "type": "object",
+      "required": [
+        "files",
+        "message"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "description": "List of context files checked, in priority order (AGENTS.md first, then CLAUDE.md)",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "filename",
+              "exists",
+              "readable"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string",
+                "enum": [
+                  "AGENTS.md",
+                  "CLAUDE.md"
+                ],
+                "description": "Name of the context file"
+              },
+              "exists": {
+                "type": "boolean",
+                "description": "Whether the file exists in PROJECT_ROOT"
+              },
+              "readable": {
+                "type": "boolean",
+                "description": "Whether the file can be read (false if permission denied or encoding error)"
+              },
+              "size_bytes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "File size in bytes (null if file does not exist)"
+              },
+              "content": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "File content as UTF-8 text (null if file does not exist or is not readable)"
+              },
+              "error": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Error message if file could not be read (null if no error)"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable summary of results (e.g., 'Found 1 of 2 context files')"
+        },
+        "total_found": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Count of files that exist and are readable"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "test_cases": [
+    {
+      "name": "both_files_exist",
+      "description": "Both AGENTS.md and CLAUDE.md exist and are readable",
+      "setup": {
+        "files": {
+          "AGENTS.md": "# Agent Instructions\nFollow these guidelines...",
+          "CLAUDE.md": "# Claude Configuration\nUse these settings..."
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 49,
+            "content": "# Agent Instructions\nFollow these guidelines...",
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 44,
+            "content": "# Claude Configuration\nUse these settings...",
+            "error": null
+          }
+        ],
+        "message": "Found 2 of 2 context files",
+        "total_found": 2
+      }
+    },
+    {
+      "name": "only_agents_md_exists",
+      "description": "Only AGENTS.md exists, CLAUDE.md is missing",
+      "setup": {
+        "files": {
+          "AGENTS.md": "# Universal Agent Instructions\nProject conventions..."
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 53,
+            "content": "# Universal Agent Instructions\nProject conventions...",
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          }
+        ],
+        "message": "Found 1 of 2 context files",
+        "total_found": 1
+      }
+    },
+    {
+      "name": "only_claude_md_exists",
+      "description": "Only CLAUDE.md exists, AGENTS.md is missing",
+      "setup": {
+        "files": {
+          "CLAUDE.md": "# Claude-specific rules\nCode style preferences..."
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 51,
+            "content": "# Claude-specific rules\nCode style preferences...",
+            "error": null
+          }
+        ],
+        "message": "Found 1 of 2 context files",
+        "total_found": 1
+      }
+    },
+    {
+      "name": "no_files_exist",
+      "description": "Neither AGENTS.md nor CLAUDE.md exist in PROJECT_ROOT",
+      "setup": {
+        "files": {}
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          }
+        ],
+        "message": "No context files found in PROJECT_ROOT",
+        "total_found": 0
+      }
+    },
+    {
+      "name": "empty_file",
+      "description": "AGENTS.md exists but is empty (0 bytes)",
+      "setup": {
+        "files": {
+          "AGENTS.md": ""
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 0,
+            "content": "",
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          }
+        ],
+        "message": "Found 1 of 2 context files",
+        "total_found": 1
+      }
+    },
+    {
+      "name": "permission_denied",
+      "description": "AGENTS.md exists but cannot be read due to permission error",
+      "setup": {
+        "files": {
+          "AGENTS.md": "<permission_denied>"
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": true,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": "Permission denied: [Errno 13] Permission denied: 'AGENTS.md'"
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          }
+        ],
+        "message": "Found 0 of 2 context files (1 exists but not readable)",
+        "total_found": 0
+      }
+    },
+    {
+      "name": "invalid_encoding",
+      "description": "CLAUDE.md exists but contains invalid UTF-8 bytes",
+      "setup": {
+        "files": {
+          "CLAUDE.md": "<invalid_utf8>"
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": true,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": "Invalid UTF-8 encoding: 'utf-8' codec can't decode byte..."
+          }
+        ],
+        "message": "Found 0 of 2 context files (1 exists but not readable)",
+        "total_found": 0
+      }
+    },
+    {
+      "name": "large_file",
+      "description": "AGENTS.md is larger than 1MB (warning logged but file still returned)",
+      "setup": {
+        "files": {
+          "AGENTS.md": "<large_file_1.5MB>"
+        }
+      },
+      "expected_output": {
+        "files": [
+          {
+            "filename": "AGENTS.md",
+            "exists": true,
+            "readable": true,
+            "size_bytes": 1572864,
+            "content": "<full_content_not_truncated>",
+            "error": null
+          },
+          {
+            "filename": "CLAUDE.md",
+            "exists": false,
+            "readable": false,
+            "size_bytes": null,
+            "content": null,
+            "error": null
+          }
+        ],
+        "message": "Found 1 of 2 context files",
+        "total_found": 1
+      },
+      "side_effects": {
+        "logs": [
+          {
+            "level": "WARNING",
+            "message": "Context file AGENTS.md is large (1.5 MB)"
+          }
+        ]
+      }
+    }
+  ],
+  "error_cases": [
+    {
+      "name": "project_root_not_set",
+      "description": "PROJECT_ROOT environment variable is not configured",
+      "setup": {
+        "env": {
+          "PROJECT_ROOT": null
+        }
+      },
+      "expected_error": {
+        "type": "ConfigurationError",
+        "message": "PROJECT_ROOT is not configured"
+      }
+    },
+    {
+      "name": "project_root_invalid",
+      "description": "PROJECT_ROOT points to non-existent directory",
+      "setup": {
+        "env": {
+          "PROJECT_ROOT": "/nonexistent/path"
+        }
+      },
+      "expected_error": {
+        "type": "ConfigurationError",
+        "message": "PROJECT_ROOT does not exist: /nonexistent/path"
+      }
+    }
+  ],
+  "security_requirements": [
+    {
+      "requirement": "Path traversal protection",
+      "description": "Filenames are hardcoded to AGENTS.md and CLAUDE.md - no user input for filenames",
+      "test": "Verify code does not accept filename parameter from user"
+    },
+    {
+      "requirement": "PROJECT_ROOT boundary enforcement",
+      "description": "File paths must be validated to ensure they are within PROJECT_ROOT",
+      "test": "Use PathValidator.validate_path() for security checks"
+    },
+    {
+      "requirement": "Read-only operations",
+      "description": "Tool must not modify, create, or delete any files",
+      "test": "Verify only Path.exists(), Path.stat(), and Path.read_text() are used"
+    }
+  ],
+  "performance_requirements": [
+    {
+      "requirement": "Response time",
+      "description": "Tool must respond within 1 second for typical files (<100KB)",
+      "measurement": "Measure end-to-end execution time in tests"
+    },
+    {
+      "requirement": "Large file handling",
+      "description": "Tool must handle files up to 5MB without crashing",
+      "measurement": "Test with synthetic files of varying sizes"
+    }
+  ]
+}
