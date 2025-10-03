@@ -39,11 +39,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/agent-mcp"
-Documentation = "https://github.com/yourusername/agent-mcp#readme"
-Repository = "https://github.com/yourusername/agent-mcp"
-"Bug Tracker" = "https://github.com/yourusername/agent-mcp/issues"
-Changelog = "https://github.com/yourusername/agent-mcp/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/geq1fan/agent-mcp"
+Documentation = "https://github.com/geq1fan/agent-mcp#readme"
+Repository = "https://github.com/geq1fan/agent-mcp"
+"Bug Tracker" = "https://github.com/geq1fan/agent-mcp/issues"
+Changelog = "https://github.com/geq1fan/agent-mcp/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agent-mcp = "agent_mcp.server:main"
