@@ -37,19 +37,29 @@ def detect_encoding(file_path: Path) -> str:
         return "utf-8"  # Default fallback
 
 
-def read_entire_file(file_path: str) -> dict:
-    """Read complete file content.
+def _prepare_file_read(file_path: str) -> tuple[Path, str]:
+    """Shared file read preparation logic.
+
+    Performs common validation and setup for all read operations:
+    - Path security validation
+    - File existence check
+    - Binary file detection
+    - Encoding detection
 
     Args:
         file_path: File path relative to project root
 
     Returns:
-        dict with keys: content, encoding, line_count, file_path
+        Tuple of (absolute_path, encoding)
+
+    Raises:
+        RuntimeError: If configuration not loaded
+        FileNotFoundError: If file doesn't exist
+        ValueError: If path is not a file or is binary
+        PathSecurityError: If path is outside project root
     """
     if not validator:
         raise RuntimeError("Configuration not loaded")
-
-    logger.info(f"read_entire_file: {file_path}")
 
     # Validate path
     abs_path = validator.validate(file_path)
@@ -65,6 +75,23 @@ def read_entire_file(file_path: str) -> dict:
 
     # Detect encoding
     encoding = detect_encoding(abs_path)
+
+    return abs_path, encoding
+
+
+def read_entire_file(file_path: str) -> dict:
+    """Read complete file content.
+
+    Args:
+        file_path: File path relative to project root
+
+    Returns:
+        dict with keys: content, encoding, line_count, file_path
+    """
+    logger.info(f"read_entire_file: {file_path}")
+
+    # Use shared preparation logic
+    abs_path, encoding = _prepare_file_read(file_path)
 
     # Read file
     try:
@@ -95,9 +122,6 @@ def read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
     Returns:
         dict with keys: content, encoding, line_count, file_path, is_partial, total_lines
     """
-    if not validator:
-        raise RuntimeError("Configuration not loaded")
-
     logger.info(f"read_file_lines: {file_path}, lines {start_line}-{end_line}")
 
     # Validate line numbers
@@ -108,17 +132,8 @@ def read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
             f"INVALID_LINE_RANGE: start_line ({start_line}) > end_line ({end_line})"
         )
 
-    # Validate path
-    abs_path = validator.validate(file_path)
-
-    if not abs_path.exists():
-        raise FileNotFoundError(f"FILE_NOT_FOUND: {file_path}")
-
-    # Check if binary
-    assert_text_file(abs_path)
-
-    # Detect encoding
-    encoding = detect_encoding(abs_path)
+    # Use shared preparation logic
+    abs_path, encoding = _prepare_file_read(file_path)
 
     # Read lines
     try:
@@ -164,22 +179,10 @@ def read_file_tail(file_path: str, num_lines: int = 10) -> dict:
     Returns:
         dict with keys: content, encoding, line_count, file_path, is_partial, total_lines
     """
-    if not validator:
-        raise RuntimeError("Configuration not loaded")
-
     logger.info(f"read_file_tail: {file_path}, num_lines={num_lines}")
 
-    # Validate path
-    abs_path = validator.validate(file_path)
-
-    if not abs_path.exists():
-        raise FileNotFoundError(f"FILE_NOT_FOUND: {file_path}")
-
-    # Check if binary
-    assert_text_file(abs_path)
-
-    # Detect encoding
-    encoding = detect_encoding(abs_path)
+    # Use shared preparation logic
+    abs_path, encoding = _prepare_file_read(file_path)
 
     # Read file tail
     try:
