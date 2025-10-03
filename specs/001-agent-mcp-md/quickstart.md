@@ -18,10 +18,10 @@
 ### 1. 安装依赖
 ```bash
 # 使用uvx直接运行(推荐)
-uvx agent-mcp
+uvx context-mcp
 
 # 或本地开发安装
-cd agent-mcp
+cd context-mcp
 uv sync
 ```
 

@@ -21,7 +21,7 @@ from agent_mcp.tools.read import (
 
 
 # Initialize FastMCP server
-mcp = FastMCP("agent-mcp")
+mcp = FastMCP("context-mcp")
 
 
 # ============================================================================

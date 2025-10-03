@@ -14,8 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Warning logging for large context files (>1MB) to improve performance awareness
 
 ### Changed
-- Executable script renamed from `mcp-agent` to `agent-mcp` for consistency with package name
-- Simplified installation command to `uvx agent-mcp` (previously required `uvx --from agent-mcp mcp-agent`)
+- Package renamed to `context-mcp` (PyPI package name `agent-mcp` was unavailable)
+- Executable script is now `context-mcp`
+- All documentation and configuration updated to use `uvx context-mcp`
 
 ## [0.1.0] - 2025-10-03
 
@@ -104,7 +105,7 @@ tests/
 - Search timeout default is 60 seconds (configurable)
 
 ### Future Enhancements
-See [GitHub Issues](https://github.com/yourusername/agent-mcp/issues) for planned features.
+See [GitHub Issues](https://github.com/geq1fan/context-mcp/issues) for planned features.
 
 ---
 
@@ -125,9 +126,9 @@ First public release of Agent MCP, providing AI agents with secure, read-only ac
 # Add to Claude Desktop config
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/path/to/your/project"
       }
@@ -136,6 +137,6 @@ First public release of Agent MCP, providing AI agents with secure, read-only ac
 }
 ```
 
-**Contributors**: Agent MCP Team
+**Contributors**: Context MCP Team
 
-[0.1.0]: https://github.com/yourusername/agent-mcp/releases/tag/v0.1.0
+[0.1.0]: https://github.com/geq1fan/context-mcp/releases/tag/v0.1.0

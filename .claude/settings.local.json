@@ -3,7 +3,13 @@
     "allow": [
       "Bash",
       "mcp__context7__resolve-library-id",
-      "mcp__context7__get-library-docs"
+      "mcp__context7__get-library-docs",
+      "mcp__github__create_pull_request",
+      "WebSearch",
+      "mcp__fetch__fetch",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:github.com)",
+      "mcp__github__get_pull_request"
     ],
     "deny": [],
     "ask": []

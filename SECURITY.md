@@ -10,7 +10,7 @@ We release patches for security vulnerabilities in the following versions:
 
 ## Security Model
 
-Agent MCP is designed with security as a core principle:
+Context MCP is designed with security as a core principle:
 
 ### Read-Only Operations
 
@@ -69,7 +69,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 
 Instead, please report security issues to:
 
-📧 **Email**: agent-mcp-security@example.com
+📧 **Email**: context-mcp-security@example.com
 
 ### What to Include
 
@@ -95,14 +95,14 @@ Impact:
 [What an attacker could do]
 
 Steps to Reproduce:
-1. Configure agent-mcp with...
+1. Configure context-mcp with...
 2. Send MCP request...
 3. Observe...
 
 Environment:
 - OS: Ubuntu 22.04
 - Python: 3.11.5
-- Agent MCP: 0.1.0
+- Context MCP: 0.1.0
 
 Proposed Fix:
 [Optional suggestions]
@@ -150,7 +150,7 @@ Proposed Fix:
    - Use `.gitignore` patterns as guidance
 
 5. **Update Regularly**:
-   - Keep agent-mcp updated to latest version
+   - Keep context-mcp updated to latest version
    - Monitor security advisories
 
 ### For Developers
@@ -178,14 +178,14 @@ Proposed Fix:
 
 ## Security Checklist
 
-Before deploying agent-mcp:
+Before deploying context-mcp:
 
 - [ ] `PROJECT_ROOT` points to a specific project directory
 - [ ] `PROJECT_ROOT` does not contain sensitive credentials
 - [ ] File permissions properly restrict access
 - [ ] Log location is secure and monitored
 - [ ] Running with minimal necessary permissions
-- [ ] Latest version of agent-mcp installed
+- [ ] Latest version of context-mcp installed
 - [ ] Dependencies are up to date
 - [ ] Configuration reviewed for security issues
 
@@ -210,7 +210,7 @@ Subscribe to security updates:
 ## Contact
 
 For security concerns:
-- **Email**: agent-mcp-security@example.com
+- **Email**: context-mcp-security@example.com
 - **GPG Key**: [If available]
 
 For general questions:

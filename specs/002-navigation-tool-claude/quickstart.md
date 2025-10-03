@@ -258,7 +258,7 @@ echo "# Test AGENTS.md" > AGENTS.md
 echo "# Test CLAUDE.md" > CLAUDE.md
 
 # Run MCP server
-uvx agent-mcp
+uvx context-mcp
 
 # In another terminal, call the tool via MCP client
 # (Use your MCP client library or tool)

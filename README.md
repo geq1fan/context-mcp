@@ -1,8 +1,8 @@
-# Agent MCP
+# Context MCP
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/geq1fan/agent-mcp/workflows/Tests/badge.svg)](https://github.com/geq1fan/agent-mcp/actions)
+[![Tests](https://github.com/geq1fan/context-mcp/workflows/Tests/badge.svg)](https://github.com/geq1fan/context-mcp/actions)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
 > **MCP Server for Project Context Integration**
@@ -13,7 +13,7 @@
 
 ## Quick Start
 
-### 1. Install agent-mcp
+### 1. Install context-mcp
 ```bash
 # No installation needed with uvx!
 # Just configure in Claude Desktop (see step 2)
@@ -29,9 +29,9 @@ Add this configuration:
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       "command": "uvx",
-      "args": ["agent-mcp"],
+      "args": ["context-mcp"],
       "env": {
         "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
@@ -78,9 +78,9 @@ For detailed tool documentation, see [CONFIGURATION.md](CONFIGURATION.md).
    ```json
    {
      "mcpServers": {
-       "agent-mcp": {
+       "context-mcp": {
          "command": "uvx",
-         "args": ["agent-mcp"],
+         "args": ["context-mcp"],
          "env": {
            "PROJECT_ROOT": "/absolute/path/to/your/project"
          }
@@ -109,7 +109,7 @@ For detailed tool documentation, see [CONFIGURATION.md](CONFIGURATION.md).
 
 | Issue | Solution |
 |-------|----------|
-| Server not showing in Claude | Verify JSON syntax, check `uvx agent-mcp` works, restart Claude Desktop |
+| Server not showing in Claude | Verify JSON syntax, check `uvx context-mcp` works, restart Claude Desktop |
 | `PROJECT_ROOT not set` | Add `PROJECT_ROOT` to env config (must be absolute path) |
 | Search timeouts | Increase `SEARCH_TIMEOUT` or install `ripgrep` |
 | Permission denied | Check file permissions, grant necessary access |
@@ -123,8 +123,8 @@ For detailed tool documentation, see [CONFIGURATION.md](CONFIGURATION.md).
 
 ```bash
 # Clone and setup
-git clone https://github.com/geq1fan/agent-mcp.git
-cd agent-mcp
+git clone https://github.com/geq1fan/context-mcp.git
+cd context-mcp
 uv sync
 
 # Run tests
@@ -154,7 +154,7 @@ PROJECT_ROOT=$(pwd) uv run pytest --cov=agent_mcp
 
 ## License
 
-**MIT License** - Copyright (c) 2025 Agent MCP Team
+**MIT License** - Copyright (c) 2025 Context MCP Team
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -181,8 +181,8 @@ For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Support & Community
 
-- **Issues**: [GitHub Issues](https://github.com/geq1fan/agent-mcp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/geq1fan/agent-mcp/discussions)
+- **Issues**: [GitHub Issues](https://github.com/geq1fan/context-mcp/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/geq1fan/context-mcp/discussions)
 - **Security**: See [SECURITY.md](SECURITY.md) for reporting vulnerabilities
 
 ---
