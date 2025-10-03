@@ -2,6 +2,7 @@
 
 Loads configuration from environment variables with validation.
 """
+
 import os
 from pathlib import Path
 from dataclasses import dataclass
@@ -16,6 +17,7 @@ class ProjectConfig:
         search_timeout: Search operation timeout in seconds
         log_retention_days: Log file retention period
     """
+
     root_path: Path
     search_timeout: int = 60
     log_retention_days: int = 7
@@ -34,7 +36,9 @@ class ProjectConfig:
 
         # Validate log_retention_days
         if self.log_retention_days < 1:
-            raise ValueError(f"log_retention_days must be >= 1: {self.log_retention_days}")
+            raise ValueError(
+                f"log_retention_days must be >= 1: {self.log_retention_days}"
+            )
 
 
 def load_config() -> ProjectConfig:
@@ -67,11 +71,12 @@ def load_config() -> ProjectConfig:
     return ProjectConfig(
         root_path=root_path,
         search_timeout=search_timeout,
-        log_retention_days=7  # Fixed per requirements
+        log_retention_days=7,  # Fixed per requirements
     )
 
 
 # Global config instance (loaded on module import)
+config: ProjectConfig | None
 try:
     config = load_config()
 except ValueError as e:

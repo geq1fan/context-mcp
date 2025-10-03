@@ -3,6 +3,7 @@
 Reads first 1024 bytes of a file to check for NULL bytes (\x00),
 which are common in binary files but rare in text files.
 """
+
 from pathlib import Path
 
 
@@ -11,9 +12,7 @@ class BinaryFileError(Exception):
 
     def __init__(self, file_path: str):
         self.file_path = file_path
-        super().__init__(
-            f"BINARY_FILE_ERROR: Cannot read binary file '{file_path}'"
-        )
+        super().__init__(f"BINARY_FILE_ERROR: Cannot read binary file '{file_path}'")
 
 
 def is_binary_file(file_path: Path, chunk_size: int = 1024) -> bool:
@@ -30,10 +29,10 @@ def is_binary_file(file_path: Path, chunk_size: int = 1024) -> bool:
         This is a heuristic check. It may not be 100% accurate for all files.
     """
     try:
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             chunk = f.read(chunk_size)
             # Check for NULL byte
-            return b'\x00' in chunk
+            return b"\x00" in chunk
     except (IOError, OSError):
         # If we can't read the file, assume it's not binary
         # The actual file operation will fail with a proper error

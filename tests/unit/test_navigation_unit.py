@@ -3,9 +3,9 @@
 These tests verify the behavior of internal helper functions used by
 read_project_context tool, including file discovery and response generation.
 """
+
 import pytest
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from agent_mcp.tools.navigation import _discover_context_file, _generate_response
 
 
@@ -52,6 +52,7 @@ class TestDiscoverContextFile:
     def test_discover_file_permission_denied(self, tmp_path):
         """Test PermissionError handling."""
         import sys
+
         if sys.platform == "win32":
             pytest.skip("Permission testing requires POSIX platform")
 
@@ -72,7 +73,10 @@ class TestDiscoverContextFile:
             assert result["size_bytes"] is None
             assert result["content"] is None
             assert result["error"] is not None
-            assert "Permission denied" in result["error"] or "permission" in result["error"].lower()
+            assert (
+                "Permission denied" in result["error"]
+                or "permission" in result["error"].lower()
+            )
         finally:
             # Cleanup
             file_path.chmod(0o644)
@@ -94,7 +98,9 @@ class TestDiscoverContextFile:
         assert result["size_bytes"] is None
         assert result["content"] is None
         assert result["error"] is not None
-        assert "encoding" in result["error"].lower() or "decode" in result["error"].lower()
+        assert (
+            "encoding" in result["error"].lower() or "decode" in result["error"].lower()
+        )
 
     def test_discover_file_path_validation(self, tmp_path):
         """Test PathValidator integration."""
@@ -106,7 +112,9 @@ class TestDiscoverContextFile:
         # Mock PathValidator instance to raise exception
         with patch("agent_mcp.tools.navigation.PathValidator") as MockValidator:
             mock_instance = MagicMock()
-            mock_instance.validate.side_effect = Exception("PATH_SECURITY_ERROR: Path outside root")
+            mock_instance.validate.side_effect = Exception(
+                "PATH_SECURITY_ERROR: Path outside root"
+            )
             MockValidator.return_value = mock_instance
 
             # Execute
@@ -116,7 +124,10 @@ class TestDiscoverContextFile:
             assert result["filename"] == filename
             assert result["readable"] is False
             assert result["error"] is not None
-            assert "PATH_SECURITY_ERROR" in result["error"] or "outside root" in result["error"].lower()
+            assert (
+                "PATH_SECURITY_ERROR" in result["error"]
+                or "outside root" in result["error"].lower()
+            )
 
     def test_discover_file_size_warning(self, tmp_path, caplog):
         """Test large file warning is logged."""
@@ -177,7 +188,7 @@ class TestGenerateResponse:
                 "readable": True,
                 "size_bytes": 100,
                 "content": "# AGENTS",
-                "error": None
+                "error": None,
             },
             {
                 "filename": "CLAUDE.md",
@@ -185,8 +196,8 @@ class TestGenerateResponse:
                 "readable": True,
                 "size_bytes": 50,
                 "content": "# CLAUDE",
-                "error": None
-            }
+                "error": None,
+            },
         ]
 
         # Execute
@@ -207,7 +218,7 @@ class TestGenerateResponse:
                 "readable": True,
                 "size_bytes": 100,
                 "content": "# AGENTS",
-                "error": None
+                "error": None,
             },
             {
                 "filename": "CLAUDE.md",
@@ -215,8 +226,8 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": None
-            }
+                "error": None,
+            },
         ]
 
         # Execute
@@ -237,7 +248,7 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": None
+                "error": None,
             },
             {
                 "filename": "CLAUDE.md",
@@ -245,8 +256,8 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": None
-            }
+                "error": None,
+            },
         ]
 
         # Execute
@@ -267,7 +278,7 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": "Permission denied"
+                "error": "Permission denied",
             },
             {
                 "filename": "CLAUDE.md",
@@ -275,8 +286,8 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": None
-            }
+                "error": None,
+            },
         ]
 
         # Execute
@@ -297,7 +308,7 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": "Permission denied"
+                "error": "Permission denied",
             },
             {
                 "filename": "CLAUDE.md",
@@ -305,8 +316,8 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": "Encoding error"
-            }
+                "error": "Encoding error",
+            },
         ]
 
         # Execute
@@ -326,7 +337,7 @@ class TestGenerateResponse:
                 "readable": True,
                 "size_bytes": 100,
                 "content": "# AGENTS",
-                "error": None
+                "error": None,
             },
             {
                 "filename": "CLAUDE.md",
@@ -334,8 +345,8 @@ class TestGenerateResponse:
                 "readable": False,
                 "size_bytes": None,
                 "content": None,
-                "error": "Encoding error"
-            }
+                "error": "Encoding error",
+            },
         ]
 
         # Execute
@@ -344,4 +355,7 @@ class TestGenerateResponse:
         # Verify
         assert result["total_found"] == 1
         # Should still mention some exist but not readable
-        assert "1 of 2" in result["message"] or "exists but not readable" in result["message"]
+        assert (
+            "1 of 2" in result["message"]
+            or "exists but not readable" in result["message"]
+        )

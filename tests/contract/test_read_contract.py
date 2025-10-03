@@ -2,12 +2,13 @@
 
 Tests for: read_entire_file, read_file_lines, read_file_tail, read_files
 """
+
 import pytest
 from agent_mcp.tools.read import (
     read_entire_file,
     read_file_lines,
     read_file_tail,
-    read_files
+    read_files,
 )
 
 
@@ -40,13 +41,19 @@ class TestReadEntireFileContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             read_entire_file(file_path="../../etc/passwd")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_file_not_found(self):
         """Test FILE_NOT_FOUND error."""
         with pytest.raises(Exception) as exc_info:
             read_entire_file(file_path="nonexistent_file_xyz.txt")
-        assert "FILE_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "FILE_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 class TestReadFileLinesContract:
@@ -86,13 +93,19 @@ class TestReadFileLinesContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             read_file_lines(file_path="../../etc/passwd", start_line=1, end_line=10)
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_file_not_found(self):
         """Test FILE_NOT_FOUND error."""
         with pytest.raises(Exception) as exc_info:
             read_file_lines(file_path="nonexistent.txt", start_line=1, end_line=10)
-        assert "FILE_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "FILE_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 class TestReadFileTailContract:
@@ -136,13 +149,19 @@ class TestReadFileTailContract:
         """Test PATH_SECURITY_ERROR for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             read_file_tail(file_path="../../etc/passwd")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_file_not_found(self):
         """Test FILE_NOT_FOUND error."""
         with pytest.raises(Exception) as exc_info:
             read_file_tail(file_path="nonexistent_xyz.log")
-        assert "FILE_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "FILE_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 class TestReadFilesContract:
@@ -204,7 +223,12 @@ class TestReadFilesContract:
 
     def test_output_schema_count_consistency(self):
         """Test that success_count + error_count equals total files."""
-        file_paths = ["README.md", "nonexistent1.txt", "pyproject.toml", "nonexistent2.txt"]
+        file_paths = [
+            "README.md",
+            "nonexistent1.txt",
+            "pyproject.toml",
+            "nonexistent2.txt",
+        ]
         result = read_files(file_paths=file_paths)
 
         assert result["success_count"] + result["error_count"] == len(file_paths)

@@ -2,6 +2,7 @@
 
 Uses Path.resolve() to normalize paths and verify they are within project root.
 """
+
 from pathlib import Path
 from typing import Union
 

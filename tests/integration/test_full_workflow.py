@@ -5,10 +5,8 @@ These tests validate end-to-end scenarios:
 - Step 3: Search (in file, in files, by name, recent files)
 - Step 4: Read (entire, lines, tail, batch)
 """
+
 import pytest
-import tempfile
-import os
-from pathlib import Path
 
 
 class TestNavigationWorkflow:
@@ -26,7 +24,10 @@ class TestNavigationWorkflow:
         # Sort by size descending
         result_sorted = list_directory(path=".", sort_by="size", order="desc")
         if len(result_sorted["entries"]) >= 2:
-            assert result_sorted["entries"][0]["size"] >= result_sorted["entries"][1]["size"]
+            assert (
+                result_sorted["entries"][0]["size"]
+                >= result_sorted["entries"][1]["size"]
+            )
 
     def test_show_tree_with_depth_limit(self):
         """Test showing directory tree with depth limit."""
@@ -60,11 +61,7 @@ class TestSearchWorkflow:
         from agent_mcp.tools.search import search_in_files
 
         # Search Python files for import statements
-        result = search_in_files(
-            query="import",
-            file_pattern="*.py",
-            path="agent_mcp"
-        )
+        result = search_in_files(query="import", file_pattern="*.py", path="agent_mcp")
         assert result["files_searched"] >= 0
         assert isinstance(result["timed_out"], bool)
 
@@ -83,9 +80,7 @@ class TestSearchWorkflow:
 
         # Find files modified in last 24 hours
         result = find_recently_modified_files(
-            hours_ago=24,
-            path=".",
-            file_pattern="*.py"
+            hours_ago=24, path=".", file_pattern="*.py"
         )
         assert result["total_found"] >= 0
         assert isinstance(result["files"], list)
@@ -109,13 +104,9 @@ class TestReadWorkflow:
         from agent_mcp.tools.read import read_file_lines
 
         # Read first 10 lines
-        result = read_file_lines(
-            file_path="pyproject.toml",
-            start_line=1,
-            end_line=10
-        )
+        result = read_file_lines(file_path="pyproject.toml", start_line=1, end_line=10)
         assert result["line_count"] <= 10
-        assert result["is_partial"] == True
+        assert result["is_partial"]
         assert result["total_lines"] >= result["line_count"]
 
     def test_read_file_tail_workflow(self):
@@ -142,7 +133,7 @@ class TestCompleteAgentWorkflow:
 
     def test_analyze_new_project_workflow(self):
         """Simulate agent analyzing a new project (quickstart complete workflow)."""
-        from agent_mcp.tools.navigation import show_tree, list_directory
+        from agent_mcp.tools.navigation import show_tree
         from agent_mcp.tools.search import find_files_by_name, search_in_files
         from agent_mcp.tools.read import read_files
 
@@ -162,9 +153,7 @@ class TestCompleteAgentWorkflow:
 
         # Step 4: Search for imports
         search_result = search_in_files(
-            query="import",
-            file_pattern="*.py",
-            path="agent_mcp"
+            query="import", file_pattern="*.py", path="agent_mcp"
         )
         assert isinstance(search_result["matches"], list)
 
@@ -237,8 +226,12 @@ Focus on security and performance.
         assert result["files"][1]["content"] == claude_content
 
         # Step 7: Verify metadata
-        assert result["files"][0]["size_bytes"] == (tmp_path / "AGENTS.md").stat().st_size
-        assert result["files"][1]["size_bytes"] == (tmp_path / "CLAUDE.md").stat().st_size
+        assert (
+            result["files"][0]["size_bytes"] == (tmp_path / "AGENTS.md").stat().st_size
+        )
+        assert (
+            result["files"][1]["size_bytes"] == (tmp_path / "CLAUDE.md").stat().st_size
+        )
         assert result["files"][0]["error"] is None
         assert result["files"][1]["error"] is None
 

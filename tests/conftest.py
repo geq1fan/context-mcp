@@ -2,6 +2,7 @@
 
 Sets up PROJECT_ROOT environment variable for all tests.
 """
+
 import os
 import pytest
 from pathlib import Path
@@ -17,6 +18,7 @@ def setup_test_environment():
     # Re-import config module to load configuration with new environment
     import importlib
     import agent_mcp.config
+
     importlib.reload(agent_mcp.config)
 
     # Also reload tool modules to pick up new config

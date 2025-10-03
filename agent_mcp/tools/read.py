@@ -2,9 +2,9 @@
 
 Provides file reading capabilities with encoding detection and partial reading support.
 """
+
 import chardet
 from pathlib import Path
-from typing import Optional
 from agent_mcp.config import config
 from agent_mcp.validators.path_validator import PathValidator
 from agent_mcp.utils.file_detector import assert_text_file
@@ -12,6 +12,7 @@ from agent_mcp.utils.logger import logger
 
 
 # Initialize path validator
+validator: PathValidator | None
 if config:
     validator = PathValidator(config.root_path)
 else:
@@ -28,12 +29,12 @@ def detect_encoding(file_path: Path) -> str:
         Detected encoding string (e.g., 'utf-8', 'ascii')
     """
     try:
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             raw_data = f.read(10000)  # Read first 10KB for detection
             result = chardet.detect(raw_data)
-            return result['encoding'] or 'utf-8'
+            return result["encoding"] or "utf-8"
     except Exception:
-        return 'utf-8'  # Default fallback
+        return "utf-8"  # Default fallback
 
 
 def read_entire_file(file_path: str) -> dict:
@@ -67,9 +68,11 @@ def read_entire_file(file_path: str) -> dict:
 
     # Read file
     try:
-        with open(abs_path, 'r', encoding=encoding, errors='replace') as f:
+        with open(abs_path, "r", encoding=encoding, errors="replace") as f:
             content = f.read()
-            line_count = content.count('\n') + (1 if content and not content.endswith('\n') else 0)
+            line_count = content.count("\n") + (
+                1 if content and not content.endswith("\n") else 0
+            )
     except PermissionError:
         raise PermissionError(f"PERMISSION_DENIED: Cannot read {file_path}")
 
@@ -77,15 +80,11 @@ def read_entire_file(file_path: str) -> dict:
         "content": content,
         "encoding": encoding,
         "line_count": line_count,
-        "file_path": file_path
+        "file_path": file_path,
     }
 
 
-def read_file_lines(
-    file_path: str,
-    start_line: int,
-    end_line: int
-) -> dict:
+def read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
     """Read specific line range from file.
 
     Args:
@@ -105,7 +104,9 @@ def read_file_lines(
     if start_line < 1 or end_line < 1:
         raise ValueError("Line numbers must be >= 1")
     if start_line > end_line:
-        raise ValueError(f"INVALID_LINE_RANGE: start_line ({start_line}) > end_line ({end_line})")
+        raise ValueError(
+            f"INVALID_LINE_RANGE: start_line ({start_line}) > end_line ({end_line})"
+        )
 
     # Validate path
     abs_path = validator.validate(file_path)
@@ -121,20 +122,22 @@ def read_file_lines(
 
     # Read lines
     try:
-        with open(abs_path, 'r', encoding=encoding, errors='replace') as f:
+        with open(abs_path, "r", encoding=encoding, errors="replace") as f:
             all_lines = f.readlines()
             total_lines = len(all_lines)
 
             # Check if range is valid
             if start_line > total_lines:
-                raise ValueError(f"INVALID_LINE_RANGE: File has only {total_lines} lines")
+                raise ValueError(
+                    f"INVALID_LINE_RANGE: File has only {total_lines} lines"
+                )
 
             # Extract requested lines
             # Convert to 0-indexed
             actual_end = min(end_line, total_lines)
-            selected_lines = all_lines[start_line-1:actual_end]
+            selected_lines = all_lines[start_line - 1 : actual_end]
 
-            content = ''.join(selected_lines)
+            content = "".join(selected_lines)
             line_count = len(selected_lines)
             is_partial = True
 
@@ -147,14 +150,11 @@ def read_file_lines(
         "line_count": line_count,
         "file_path": file_path,
         "is_partial": is_partial,
-        "total_lines": total_lines
+        "total_lines": total_lines,
     }
 
 
-def read_file_tail(
-    file_path: str,
-    num_lines: int = 10
-) -> dict:
+def read_file_tail(file_path: str, num_lines: int = 10) -> dict:
     """Read last N lines of file.
 
     Args:
@@ -183,13 +183,15 @@ def read_file_tail(
 
     # Read file tail
     try:
-        with open(abs_path, 'r', encoding=encoding, errors='replace') as f:
+        with open(abs_path, "r", encoding=encoding, errors="replace") as f:
             all_lines = f.readlines()
             total_lines = len(all_lines)
 
             # Get last N lines
-            tail_lines = all_lines[-num_lines:] if total_lines > num_lines else all_lines
-            content = ''.join(tail_lines)
+            tail_lines = (
+                all_lines[-num_lines:] if total_lines > num_lines else all_lines
+            )
+            content = "".join(tail_lines)
             line_count = len(tail_lines)
             is_partial = total_lines > num_lines
 
@@ -202,7 +204,7 @@ def read_file_tail(
         "line_count": line_count,
         "file_path": file_path,
         "is_partial": is_partial,
-        "total_lines": total_lines
+        "total_lines": total_lines,
     }
 
 
@@ -242,17 +244,16 @@ def read_files(file_paths: list[str]) -> dict:
             elif "PERMISSION_DENIED" in str(e):
                 error_code = "PERMISSION_DENIED"
 
-            results.append({
-                "file_path": file_path,
-                "error": {
-                    "code": error_code,
-                    "message": str(e)
+            results.append(
+                {
+                    "file_path": file_path,
+                    "error": {"code": error_code, "message": str(e)},
                 }
-            })
+            )
             error_count += 1
 
     return {
         "files": results,
         "success_count": success_count,
-        "error_count": error_count
+        "error_count": error_count,
     }

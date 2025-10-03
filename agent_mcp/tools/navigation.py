@@ -2,17 +2,17 @@
 
 Provides directory listing and tree visualization capabilities.
 """
-import os
-import subprocess
+
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 from agent_mcp.config import config
 from agent_mcp.validators.path_validator import PathValidator
-from agent_mcp import FileEntry, TreeNode
+from agent_mcp import FileEntry
 from agent_mcp.utils.logger import logger
 
 
 # Initialize path validator with project root
+validator: PathValidator | None
 if config:
     validator = PathValidator(config.root_path)
 else:
@@ -23,7 +23,7 @@ def list_directory(
     path: str = ".",
     sort_by: Literal["name", "size", "time"] = "name",
     order: Literal["asc", "desc"] = "asc",
-    limit: int = -1
+    limit: int = -1,
 ) -> dict:
     """List directory contents with sorting and limiting.
 
@@ -41,10 +41,12 @@ def list_directory(
         FileNotFoundError: If directory doesn't exist
         PermissionError: If directory cannot be accessed
     """
-    if not validator:
+    if config is None or validator is None:
         raise RuntimeError("Configuration not loaded")
 
-    logger.info(f"list_directory: path={path}, sort_by={sort_by}, order={order}, limit={limit}")
+    logger.info(
+        f"list_directory: path={path}, sort_by={sort_by}, order={order}, limit={limit}"
+    )
 
     # Validate path
     abs_path = validator.validate(path)
@@ -66,11 +68,13 @@ def list_directory(
                 type="dir" if item.is_dir() else "file",
                 size=stat.st_size if item.is_file() else 0,
                 mtime=stat.st_mtime,
-                path=str(item.relative_to(config.root_path))
+                path=str(item.relative_to(config.root_path)),
             )
             entries.append(entry)
     except PermissionError as e:
-        raise PermissionError(f"PERMISSION_DENIED: Cannot list directory: {path}") from e
+        raise PermissionError(
+            f"PERMISSION_DENIED: Cannot list directory: {path}"
+        ) from e
 
     # Sort entries
     if sort_by == "name":
@@ -94,19 +98,16 @@ def list_directory(
                 "type": e.type,
                 "size": e.size,
                 "mtime": e.mtime,
-                "path": e.path
+                "path": e.path,
             }
             for e in entries
         ],
         "total": total,
-        "truncated": truncated
+        "truncated": truncated,
     }
 
 
-def show_tree(
-    path: str = ".",
-    max_depth: int = 3
-) -> dict:
+def show_tree(path: str = ".", max_depth: int = 3) -> dict:
     """Show directory tree structure.
 
     Args:
@@ -144,10 +145,10 @@ def show_tree(
     def build_tree_node(current_path: Path, current_depth: int) -> dict:
         nonlocal max_depth_reached
 
-        node = {
+        node: dict[str, object] = {
             "name": current_path.name if current_path != abs_path else ".",
             "type": "dir" if current_path.is_dir() else "file",
-            "depth": current_depth
+            "depth": current_depth,
         }
 
         # Add children if directory and not at max depth
@@ -169,10 +170,7 @@ def show_tree(
 
     tree = build_tree_node(abs_path, 0)
 
-    return {
-        "tree": tree,
-        "max_depth_reached": max_depth_reached
-    }
+    return {"tree": tree, "max_depth_reached": max_depth_reached}
 
 
 def _discover_context_file(filename: str, project_root: Path) -> dict:
@@ -194,7 +192,7 @@ def _discover_context_file(filename: str, project_root: Path) -> dict:
         "readable": False,
         "size_bytes": None,
         "content": None,
-        "error": None
+        "error": None,
     }
 
     # Check if file exists
@@ -270,11 +268,7 @@ def _generate_response(files: list[dict]) -> dict:
     else:
         message = f"Found {total_found} of {num_files} context files"
 
-    return {
-        "files": files,
-        "message": message,
-        "total_found": total_found
-    }
+    return {"files": files, "message": message, "total_found": total_found}
 
 
 def read_project_context() -> dict:

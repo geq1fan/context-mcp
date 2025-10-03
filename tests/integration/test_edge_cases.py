@@ -5,10 +5,10 @@ Tests from quickstart.md Step 5-6:
 - Empty results, invalid inputs
 - Timeouts, permission errors
 """
+
 import pytest
 import tempfile
 import os
-from pathlib import Path
 
 
 class TestSecurityBoundaries:
@@ -20,7 +20,10 @@ class TestSecurityBoundaries:
 
         with pytest.raises(Exception) as exc_info:
             list_directory(path="../../etc")
-        assert "security" in str(exc_info.value).lower() or "outside" in str(exc_info.value).lower()
+        assert (
+            "security" in str(exc_info.value).lower()
+            or "outside" in str(exc_info.value).lower()
+        )
 
     def test_path_traversal_attack_read_file(self):
         """Test path traversal attack is blocked in read operations."""
@@ -28,7 +31,10 @@ class TestSecurityBoundaries:
 
         with pytest.raises(Exception) as exc_info:
             read_entire_file(file_path="../../../etc/passwd")
-        assert "security" in str(exc_info.value).lower() or "outside" in str(exc_info.value).lower()
+        assert (
+            "security" in str(exc_info.value).lower()
+            or "outside" in str(exc_info.value).lower()
+        )
 
     def test_path_traversal_attack_search(self):
         """Test path traversal attack is blocked in search operations."""
@@ -36,7 +42,10 @@ class TestSecurityBoundaries:
 
         with pytest.raises(Exception) as exc_info:
             search_in_files(query="test", path="../../etc")
-        assert "security" in str(exc_info.value).lower() or "outside" in str(exc_info.value).lower()
+        assert (
+            "security" in str(exc_info.value).lower()
+            or "outside" in str(exc_info.value).lower()
+        )
 
 
 class TestEmptyAndInvalidInputs:
@@ -45,8 +54,6 @@ class TestEmptyAndInvalidInputs:
     def test_empty_directory(self):
         """Test listing an empty directory."""
         from agent_mcp.tools.navigation import list_directory
-        import tempfile
-        import os
 
         # Create temporary empty directory within project
         with tempfile.TemporaryDirectory(dir=".") as tmpdir:
@@ -54,7 +61,7 @@ class TestEmptyAndInvalidInputs:
             result = list_directory(path=dir_name)
             assert result["total"] == 0
             assert len(result["entries"]) == 0
-            assert result["truncated"] == False
+            assert not result["truncated"]
 
     def test_nonexistent_directory(self):
         """Test accessing non-existent directory."""
@@ -62,7 +69,10 @@ class TestEmptyAndInvalidInputs:
 
         with pytest.raises(Exception) as exc_info:
             list_directory(path="nonexistent_dir_xyz_123")
-        assert "not found" in str(exc_info.value).lower() or "not exist" in str(exc_info.value).lower()
+        assert (
+            "not found" in str(exc_info.value).lower()
+            or "not exist" in str(exc_info.value).lower()
+        )
 
     def test_nonexistent_file(self):
         """Test reading non-existent file."""
@@ -72,7 +82,11 @@ class TestEmptyAndInvalidInputs:
             read_entire_file(file_path="nonexistent_file_xyz_123.txt")
         # Check for FILE_NOT_FOUND error code or relevant error messages
         error_msg = str(exc_info.value).lower()
-        assert "file_not_found" in error_msg or "not found" in error_msg or "not exist" in error_msg
+        assert (
+            "file_not_found" in error_msg
+            or "not found" in error_msg
+            or "not exist" in error_msg
+        )
 
     def test_search_no_matches(self):
         """Test search with no matches using a very unique string unlikely to exist."""
@@ -81,13 +95,13 @@ class TestEmptyAndInvalidInputs:
         # Use an extremely unique query string with special markers
         result = search_in_files(
             query="ZZZYYYXXX_NONEXISTENT_UNIQUE_MARKER_999888777",
-            file_pattern="*.md"  # Limit to markdown files to reduce false positives
+            file_pattern="*.md",  # Limit to markdown files to reduce false positives
         )
         # Note: In a real codebase, there might be matches in generated files or logs
         # This test checks the structure is correct even if matches > 0
         assert isinstance(result["total_matches"], int)
         assert isinstance(result["matches"], list)
-        assert result["timed_out"] == False
+        assert not result["timed_out"]
 
     def test_find_no_matching_files(self):
         """Test find with no matching files."""
@@ -106,11 +120,9 @@ class TestInvalidLineRanges:
         from agent_mcp.tools.read import read_file_lines
 
         # Try to read lines way beyond file length
-        with pytest.raises(Exception) as exc_info:
+        with pytest.raises(Exception):
             read_file_lines(
-                file_path="pyproject.toml",
-                start_line=10000,
-                end_line=20000
+                file_path="pyproject.toml", start_line=10000, end_line=20000
             )
         # Should raise error about invalid range or just return empty
 
@@ -119,12 +131,11 @@ class TestInvalidLineRanges:
         from agent_mcp.tools.read import read_file_lines
 
         with pytest.raises(Exception) as exc_info:
-            read_file_lines(
-                file_path="pyproject.toml",
-                start_line=10,
-                end_line=5
-            )
-        assert "invalid" in str(exc_info.value).lower() or "range" in str(exc_info.value).lower()
+            read_file_lines(file_path="pyproject.toml", start_line=10, end_line=5)
+        assert (
+            "invalid" in str(exc_info.value).lower()
+            or "range" in str(exc_info.value).lower()
+        )
 
 
 class TestLimitAndTruncation:
@@ -138,7 +149,7 @@ class TestLimitAndTruncation:
         result = list_directory(path=".", limit=3)
         assert len(result["entries"]) <= 3
         if result["total"] > 3:
-            assert result["truncated"] == True
+            assert result["truncated"]
 
     def test_list_directory_no_limit(self):
         """Test directory listing with no limit (-1)."""
@@ -146,7 +157,7 @@ class TestLimitAndTruncation:
 
         result = list_directory(path=".", limit=-1)
         assert len(result["entries"]) == result["total"]
-        assert result["truncated"] == False
+        assert not result["truncated"]
 
 
 class TestBatchOperationResilience:
@@ -157,10 +168,10 @@ class TestBatchOperationResilience:
         from agent_mcp.tools.read import read_files
 
         file_paths = [
-            "pyproject.toml",           # Valid
-            "nonexistent1.txt",         # Invalid
-            ".env.example",             # Valid
-            "nonexistent2.txt",         # Invalid
+            "pyproject.toml",  # Valid
+            "nonexistent1.txt",  # Invalid
+            ".env.example",  # Valid
+            "nonexistent2.txt",  # Invalid
         ]
 
         result = read_files(file_paths=file_paths)
@@ -224,7 +235,9 @@ class TestMaxDepthBehavior:
                 assert child["depth"] == 1
                 # Should not have children at max_depth
                 if child["type"] == "dir":
-                    assert "children" not in child or len(child.get("children", [])) == 0
+                    assert (
+                        "children" not in child or len(child.get("children", [])) == 0
+                    )
 
     def test_max_depth_maximum_limit(self):
         """Test tree with max_depth=10 (maximum allowed)."""
@@ -242,6 +255,7 @@ class TestContextFileEdgeCases:
     def test_context_file_permission_error(self, tmp_path, monkeypatch):
         """Test handling of permission denied error when reading context file."""
         import sys
+
         if sys.platform == "win32":
             pytest.skip("Permission testing requires POSIX platform")
 
@@ -271,7 +285,10 @@ class TestContextFileEdgeCases:
             assert agents_result["content"] is None
             assert agents_result["size_bytes"] is None
             assert agents_result["error"] is not None
-            assert "Permission denied" in agents_result["error"] or "permission" in agents_result["error"].lower()
+            assert (
+                "Permission denied" in agents_result["error"]
+                or "permission" in agents_result["error"].lower()
+            )
         finally:
             # Cleanup: Restore permissions
             agents_file.chmod(0o644)
@@ -306,7 +323,8 @@ class TestContextFileEdgeCases:
         # Verify warning was logged
         warning_logged = any(
             "large" in record.message.lower() and "AGENTS.md" in record.message
-            for record in caplog.records if record.levelname == "WARNING"
+            for record in caplog.records
+            if record.levelname == "WARNING"
         )
         assert warning_logged, "Expected WARNING log for large file"
 
@@ -336,7 +354,10 @@ class TestContextFileEdgeCases:
         assert claude_result["content"] is None
         assert claude_result["size_bytes"] is None
         assert claude_result["error"] is not None
-        assert "encoding" in claude_result["error"].lower() or "decode" in claude_result["error"].lower()
+        assert (
+            "encoding" in claude_result["error"].lower()
+            or "decode" in claude_result["error"].lower()
+        )
 
     def test_context_file_empty_file(self, tmp_path, monkeypatch):
         """Test handling of empty context file (0 bytes)."""
@@ -425,8 +446,11 @@ class TestContextFileEdgeCases:
     def test_context_file_symlink_handling(self, tmp_path, monkeypatch):
         """Test handling of symlinked context files."""
         import sys
+
         if sys.platform == "win32":
-            pytest.skip("Symlink testing requires POSIX platform or admin rights on Windows")
+            pytest.skip(
+                "Symlink testing requires POSIX platform or admin rights on Windows"
+            )
 
         from agent_mcp.tools.navigation import read_project_context
         from agent_mcp.config import ProjectConfig

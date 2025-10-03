@@ -3,8 +3,8 @@
 These tests verify that the MCP tool implementations conform to the contract
 specifications defined in contracts/navigation_tools.json and read_project_context.json.
 """
+
 import pytest
-from pathlib import Path
 from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
 
 
@@ -74,13 +74,19 @@ class TestListDirectoryContract:
         """Test PATH_SECURITY_ERROR is raised for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             list_directory(path="../../etc")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_path_not_found(self):
         """Test PATH_NOT_FOUND error for non-existent directory."""
         with pytest.raises(Exception) as exc_info:
             list_directory(path="nonexistent_directory_xyz")
-        assert "PATH_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "PATH_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 class TestShowTreeContract:
@@ -149,13 +155,19 @@ class TestShowTreeContract:
         """Test PATH_SECURITY_ERROR is raised for paths outside root."""
         with pytest.raises(Exception) as exc_info:
             show_tree(path="../../etc")
-        assert "PATH_SECURITY_ERROR" in str(exc_info.value) or "outside root" in str(exc_info.value).lower()
+        assert (
+            "PATH_SECURITY_ERROR" in str(exc_info.value)
+            or "outside root" in str(exc_info.value).lower()
+        )
 
     def test_error_path_not_found(self):
         """Test PATH_NOT_FOUND error for non-existent directory."""
         with pytest.raises(Exception) as exc_info:
             show_tree(path="nonexistent_directory_xyz")
-        assert "PATH_NOT_FOUND" in str(exc_info.value) or "not exist" in str(exc_info.value).lower()
+        assert (
+            "PATH_NOT_FOUND" in str(exc_info.value)
+            or "not exist" in str(exc_info.value).lower()
+        )
 
 
 @pytest.mark.contract
@@ -173,6 +185,7 @@ class TestReadProjectContextContract:
 
         # Mock config module
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -213,6 +226,7 @@ class TestReadProjectContextContract:
         (tmp_path / "AGENTS.md").write_text(agents_content, encoding="utf-8")
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -244,6 +258,7 @@ class TestReadProjectContextContract:
         (tmp_path / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -269,6 +284,7 @@ class TestReadProjectContextContract:
         """Test case: Neither AGENTS.md nor CLAUDE.md exist in PROJECT_ROOT."""
         # Setup: Empty directory (no context files)
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -293,6 +309,7 @@ class TestReadProjectContextContract:
         (tmp_path / "AGENTS.md").write_text("", encoding="utf-8")
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -314,6 +331,7 @@ class TestReadProjectContextContract:
     def test_permission_denied(self, tmp_path, monkeypatch):
         """Test case: AGENTS.md exists but cannot be read due to permission error."""
         import sys
+
         if sys.platform == "win32":
             pytest.skip("Permission testing requires POSIX platform")
 
@@ -323,6 +341,7 @@ class TestReadProjectContextContract:
         agents_file.chmod(0o000)  # Remove all permissions
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -351,6 +370,7 @@ class TestReadProjectContextContract:
         claude_file.write_bytes(b"# Valid start\n\xff\xfe\nInvalid bytes")
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -367,7 +387,10 @@ class TestReadProjectContextContract:
         assert claude_file_result["readable"] is False
         assert claude_file_result["content"] is None
         assert claude_file_result["error"] is not None
-        assert "encoding" in claude_file_result["error"].lower() or "decode" in claude_file_result["error"].lower()
+        assert (
+            "encoding" in claude_file_result["error"].lower()
+            or "decode" in claude_file_result["error"].lower()
+        )
 
     def test_large_file(self, tmp_path, monkeypatch, caplog):
         """Test case: AGENTS.md is larger than 1MB (warning logged but file still returned)."""
@@ -378,6 +401,7 @@ class TestReadProjectContextContract:
         (tmp_path / "AGENTS.md").write_text(large_content, encoding="utf-8")
 
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -400,6 +424,7 @@ class TestReadProjectContextContract:
     def test_output_schema_required_fields(self, tmp_path, monkeypatch):
         """Test that output contains all required fields according to contract."""
         from agent_mcp.config import ProjectConfig
+
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("agent_mcp.config.config", mock_config)
 
@@ -436,7 +461,9 @@ class TestReadProjectContextContract:
             # Optional fields
             if file_info["exists"]:
                 assert "size_bytes" in file_info
-                assert file_info["size_bytes"] is None or isinstance(file_info["size_bytes"], int)
+                assert file_info["size_bytes"] is None or isinstance(
+                    file_info["size_bytes"], int
+                )
 
             assert "content" in file_info
             assert file_info["content"] is None or isinstance(file_info["content"], str)
