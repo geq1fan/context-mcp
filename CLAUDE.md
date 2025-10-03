@@ -1,4 +1,4 @@
-# Agent Context: MCP 项目上下文集成服务
+﻿# Agent Context: MCP 项目上下文集成服务
 
 **Generated**: 2025-10-03 | **Feature**: 001-agent-mcp-md
 

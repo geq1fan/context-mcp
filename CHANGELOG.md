@@ -5,14 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- New MCP tool `read_project_context` to discover and read AI agent context files (AGENTS.md and CLAUDE.md)
+- Support for project-specific agent instructions with priority ordering (AGENTS.md first, then CLAUDE.md)
+- Comprehensive error handling for missing files, permission errors, and encoding issues in context file reading
+- Warning logging for large context files (>1MB) to improve performance awareness
+
+### Changed
+- Executable script renamed from `mcp-agent` to `agent-mcp` for consistency with package name
+- Simplified installation command to `uvx agent-mcp` (previously required `uvx --from agent-mcp mcp-agent`)
+
 ## [0.1.0] - 2025-10-03
 
 ### Added
 
 #### Core Features
-- **Navigation Tools** (2 tools)
+- **Navigation Tools** (3 tools)
   - `list_directory`: List directory contents with sorting (name, size, time) and pagination
   - `show_tree`: Display directory tree structure with configurable depth limits
+  - `read_project_context`: Read AI agent context files from PROJECT_ROOT (NEW in unreleased)
 
 - **Search Tools** (4 tools)
   - `search_in_file`: Search for text/regex in a single file
@@ -40,11 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Design documents (spec.md, plan.md, data-model.md, etc.)
 
 #### Testing
-- 121 tests across 3 categories:
-  - Contract tests (61 tests) - MCP protocol compliance
-  - Integration tests (28 tests) - End-to-end workflows
-  - Unit tests (32 tests) - Component testing
-- 99.2% test coverage
+- 149 tests across 3 categories:
+  - Contract tests (69 tests) - MCP protocol compliance
+  - Integration tests (38 tests) - End-to-end workflows
+  - Unit tests (42 tests) - Component testing
+- >99% test coverage
 
 #### Developer Experience
 - FastMCP framework integration
@@ -101,9 +114,9 @@ See [GitHub Issues](https://github.com/yourusername/agent-mcp/issues) for planne
 First public release of Agent MCP, providing AI agents with secure, read-only access to project codebases through the Model Context Protocol.
 
 **Highlights**:
-- ✅ 10 production-ready MCP tools
+- ✅ 11 production-ready MCP tools (including read_project_context in unreleased)
 - ✅ Comprehensive security features
-- ✅ 121 tests with 99.2% coverage
+- ✅ 149 tests with >99% coverage
 - ✅ Complete documentation and configuration guides
 - ✅ Claude Desktop integration ready
 

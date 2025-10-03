@@ -5,7 +5,7 @@ Registers all 10 MCP tools and starts the server.
 from fastmcp import FastMCP
 from agent_mcp.config import load_config, config
 from agent_mcp.utils.logger import setup_logging, logger
-from agent_mcp.tools.navigation import list_directory, show_tree
+from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
 from agent_mcp.tools.search import (
     search_in_file,
     search_in_files,
@@ -61,6 +61,26 @@ def mcp_show_tree(path: str = ".", max_depth: int = 3) -> dict:
         dict: tree (TreeNode), max_depth_reached (bool)
     """
     return show_tree(path, max_depth)
+
+
+@mcp.tool()
+def mcp_read_project_context() -> dict:
+    """Read project context files (AGENTS.md, CLAUDE.md) from PROJECT_ROOT.
+
+    Discovers and reads AI agent context files to understand project-specific
+    conventions, coding standards, and behavioral guidelines.
+
+    Returns:
+        dict: {
+            "files": List[dict],    # Context file metadata and content
+            "message": str,          # Human-readable result summary
+            "total_found": int       # Count of readable files
+        }
+
+    Raises:
+        RuntimeError: If PROJECT_ROOT is not set or invalid
+    """
+    return read_project_context()
 
 
 # ============================================================================
