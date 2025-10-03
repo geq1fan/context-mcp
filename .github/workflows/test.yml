@@ -1,0 +1,61 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Install ripgrep (optional)
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update && sudo apt-get install -y ripgrep
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          brew install ripgrep
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          choco install ripgrep -y
+        fi
+
+    - name: Run tests
+      env:
+        PROJECT_ROOT: ${{ github.workspace }}
+      run: uv run pytest -v --tb=short
+
+    - name: Run contract tests
+      env:
+        PROJECT_ROOT: ${{ github.workspace }}
+      run: uv run pytest tests/contract/ -v
+
+    - name: Run integration tests
+      env:
+        PROJECT_ROOT: ${{ github.workspace }}
+      run: uv run pytest tests/integration/ -v
+
+    - name: Run unit tests
+      env:
+        PROJECT_ROOT: ${{ github.workspace }}
+      run: uv run pytest tests/unit/ -v

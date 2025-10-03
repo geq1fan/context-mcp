@@ -1,0 +1,138 @@
+{
+  "$schema": "https://spec.modelcontextprotocol.io/schema/tool-contract.json",
+  "tools": [
+    {
+      "name": "list_directory",
+      "description": "列出指定目录下的所有文件和子目录,支持排序和限制返回数量",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "目录路径(相对于项目根目录)",
+            "default": "."
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": ["name", "size", "time"],
+            "description": "排序字段",
+            "default": "name"
+          },
+          "order": {
+            "type": "string",
+            "enum": ["asc", "desc"],
+            "description": "排序顺序",
+            "default": "asc"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "返回条目数量限制,-1表示无限制",
+            "default": -1,
+            "minimum": -1
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string", "enum": ["file", "dir"]},
+                "size": {"type": "integer"},
+                "mtime": {"type": "number"},
+                "path": {"type": "string"}
+              },
+              "required": ["name", "type", "size", "mtime", "path"]
+            }
+          },
+          "total": {
+            "type": "integer",
+            "description": "总条目数(包含被limit截断的)"
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "是否被截断"
+          }
+        },
+        "required": ["entries", "total", "truncated"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "请求路径不在项目根目录内"
+        },
+        {
+          "code": "PATH_NOT_FOUND",
+          "message": "目录不存在"
+        },
+        {
+          "code": "PERMISSION_DENIED",
+          "message": "无权限访问目录"
+        }
+      ],
+      "requirements": ["FR-001", "FR-002", "FR-003", "FR-020"]
+    },
+    {
+      "name": "show_tree",
+      "description": "以树状结构展示项目的目录层级",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "起始目录路径(相对于项目根目录)",
+            "default": "."
+          },
+          "max_depth": {
+            "type": "integer",
+            "description": "最大展示深度,1表示仅当前层",
+            "default": 3,
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "tree": {
+            "type": "object",
+            "description": "树根节点",
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string", "enum": ["file", "dir"]},
+              "depth": {"type": "integer"},
+              "children": {
+                "type": "array",
+                "items": {"$ref": "#/properties/tree"}
+              }
+            },
+            "required": ["name", "type", "depth"]
+          },
+          "max_depth_reached": {
+            "type": "boolean",
+            "description": "是否达到最大深度限制"
+          }
+        },
+        "required": ["tree", "max_depth_reached"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "请求路径不在项目根目录内"
+        },
+        {
+          "code": "PATH_NOT_FOUND",
+          "message": "目录不存在"
+        }
+      ],
+      "requirements": ["FR-004", "FR-005", "FR-020"]
+    }
+  ]
+}

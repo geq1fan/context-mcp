@@ -1,0 +1,216 @@
+{
+  "$schema": "https://spec.modelcontextprotocol.io/schema/tool-contract.json",
+  "tools": [
+    {
+      "name": "read_entire_file",
+      "description": "读取文件的全部内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "文件路径(相对于项目根目录)"
+          }
+        },
+        "required": ["file_path"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "content": {"type": "string"},
+          "encoding": {"type": "string"},
+          "line_count": {"type": "integer"},
+          "file_path": {"type": "string"}
+        },
+        "required": ["content", "encoding", "line_count", "file_path"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "文件路径不在项目根目录内"
+        },
+        {
+          "code": "FILE_NOT_FOUND",
+          "message": "文件不存在"
+        },
+        {
+          "code": "BINARY_FILE_ERROR",
+          "message": "不支持读取二进制文件"
+        },
+        {
+          "code": "PERMISSION_DENIED",
+          "message": "无权限读取文件"
+        }
+      ],
+      "requirements": ["FR-014", "FR-018", "FR-018a", "FR-020", "FR-021", "FR-022"]
+    },
+    {
+      "name": "read_file_lines",
+      "description": "读取文件中指定行号范围内的内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "文件路径(相对于项目根目录)"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "起始行号(从1开始)",
+            "minimum": 1
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "结束行号(包含)",
+            "minimum": 1
+          }
+        },
+        "required": ["file_path", "start_line", "end_line"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "content": {"type": "string"},
+          "encoding": {"type": "string"},
+          "line_count": {
+            "type": "integer",
+            "description": "返回的行数"
+          },
+          "file_path": {"type": "string"},
+          "is_partial": {
+            "type": "boolean",
+            "description": "是否是部分读取"
+          },
+          "total_lines": {
+            "type": "integer",
+            "description": "文件总行数"
+          }
+        },
+        "required": ["content", "encoding", "line_count", "file_path", "is_partial", "total_lines"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "文件路径不在项目根目录内"
+        },
+        {
+          "code": "FILE_NOT_FOUND",
+          "message": "文件不存在"
+        },
+        {
+          "code": "BINARY_FILE_ERROR",
+          "message": "不支持读取二进制文件"
+        },
+        {
+          "code": "INVALID_LINE_RANGE",
+          "message": "行号范围无效(start_line > end_line或超出文件范围)"
+        }
+      ],
+      "requirements": ["FR-015", "FR-018", "FR-018a"]
+    },
+    {
+      "name": "read_file_tail",
+      "description": "读取文件末尾的N行内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "文件路径(相对于项目根目录)"
+          },
+          "num_lines": {
+            "type": "integer",
+            "description": "读取的行数",
+            "minimum": 1,
+            "default": 10
+          }
+        },
+        "required": ["file_path"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "content": {"type": "string"},
+          "encoding": {"type": "string"},
+          "line_count": {
+            "type": "integer",
+            "description": "实际返回的行数(文件行数可能少于num_lines)"
+          },
+          "file_path": {"type": "string"},
+          "is_partial": {
+            "type": "boolean",
+            "description": "是否是部分读取"
+          },
+          "total_lines": {
+            "type": "integer",
+            "description": "文件总行数"
+          }
+        },
+        "required": ["content", "encoding", "line_count", "file_path", "is_partial", "total_lines"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "文件路径不在项目根目录内"
+        },
+        {
+          "code": "FILE_NOT_FOUND",
+          "message": "文件不存在"
+        },
+        {
+          "code": "BINARY_FILE_ERROR",
+          "message": "不支持读取二进制文件"
+        }
+      ],
+      "requirements": ["FR-016", "FR-018", "FR-018a"]
+    },
+    {
+      "name": "read_files",
+      "description": "批量读取多个文件的全部内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_paths": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "文件路径列表(相对于项目根目录)",
+            "minItems": 1
+          }
+        },
+        "required": ["file_paths"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_path": {"type": "string"},
+                "content": {"type": "string", "description": "如果成功读取"},
+                "encoding": {"type": "string", "description": "如果成功读取"},
+                "line_count": {"type": "integer", "description": "如果成功读取"},
+                "error": {
+                  "type": "object",
+                  "description": "如果读取失败",
+                  "properties": {
+                    "code": {"type": "string"},
+                    "message": {"type": "string"}
+                  }
+                }
+              },
+              "required": ["file_path"]
+            }
+          },
+          "success_count": {"type": "integer"},
+          "error_count": {"type": "integer"}
+        },
+        "required": ["files", "success_count", "error_count"]
+      },
+      "errors": [],
+      "notes": "批量操作不抛出异常,单个文件错误记录在结果中",
+      "requirements": ["FR-017", "FR-018", "FR-018a"]
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "$schema": "https://spec.modelcontextprotocol.io/schema/tool-contract.json",
+  "tools": [
+    {
+      "name": "search_in_file",
+      "description": "在单个文件中搜索指定文本或正则表达式",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "搜索文本或正则表达式",
+            "minLength": 1
+          },
+          "file_path": {
+            "type": "string",
+            "description": "文件路径(相对于项目根目录)"
+          },
+          "use_regex": {
+            "type": "boolean",
+            "description": "是否使用正则表达式",
+            "default": false
+          }
+        },
+        "required": ["query", "file_path"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "matches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line_number": {"type": "integer"},
+                "line_content": {"type": "string"},
+                "match_start": {"type": "integer"},
+                "match_end": {"type": "integer"}
+              },
+              "required": ["line_number", "line_content"]
+            }
+          },
+          "total_matches": {"type": "integer"}
+        },
+        "required": ["matches", "total_matches"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "文件路径不在项目根目录内"
+        },
+        {
+          "code": "FILE_NOT_FOUND",
+          "message": "文件不存在"
+        },
+        {
+          "code": "BINARY_FILE_ERROR",
+          "message": "不支持搜索二进制文件"
+        },
+        {
+          "code": "INVALID_REGEX",
+          "message": "无效的正则表达式"
+        }
+      ],
+      "requirements": ["FR-006", "FR-007", "FR-013", "FR-018a"]
+    },
+    {
+      "name": "search_in_files",
+      "description": "在多个文件中递归搜索内容,支持文件名过滤和排除模式",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "搜索文本或正则表达式",
+            "minLength": 1
+          },
+          "file_pattern": {
+            "type": "string",
+            "description": "文件名glob模式(如*.py, *.{ts,tsx})",
+            "default": "*"
+          },
+          "path": {
+            "type": "string",
+            "description": "搜索起始路径(相对于项目根目录)",
+            "default": "."
+          },
+          "use_regex": {
+            "type": "boolean",
+            "description": "是否使用正则表达式",
+            "default": false
+          },
+          "exclude_query": {
+            "type": "string",
+            "description": "排除包含此模式的结果",
+            "default": ""
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "超时秒数",
+            "default": 60,
+            "minimum": 1
+          }
+        },
+        "required": ["query"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "matches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_path": {"type": "string"},
+                "line_number": {"type": "integer"},
+                "line_content": {"type": "string"}
+              },
+              "required": ["file_path", "line_number", "line_content"]
+            }
+          },
+          "total_matches": {"type": "integer"},
+          "files_searched": {"type": "integer"},
+          "timed_out": {"type": "boolean"}
+        },
+        "required": ["matches", "total_matches", "files_searched", "timed_out"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "路径不在项目根目录内"
+        },
+        {
+          "code": "SEARCH_TIMEOUT",
+          "message": "搜索超时,返回部分结果"
+        },
+        {
+          "code": "INVALID_REGEX",
+          "message": "无效的正则表达式"
+        },
+        {
+          "code": "INVALID_GLOB_PATTERN",
+          "message": "无效的glob模式"
+        }
+      ],
+      "requirements": ["FR-008", "FR-009", "FR-010", "FR-024"]
+    },
+    {
+      "name": "find_files_by_name",
+      "description": "根据文件名模式查找文件(支持通配符)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name_pattern": {
+            "type": "string",
+            "description": "文件名模式(支持*和?通配符)",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "description": "搜索起始路径(相对于项目根目录)",
+            "default": "."
+          }
+        },
+        "required": ["name_pattern"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "匹配的文件路径"
+            }
+          },
+          "total_found": {"type": "integer"}
+        },
+        "required": ["files", "total_found"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "路径不在项目根目录内"
+        }
+      ],
+      "requirements": ["FR-011"]
+    },
+    {
+      "name": "find_recently_modified_files",
+      "description": "查找最近修改的文件",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "搜索起始路径(相对于项目根目录)",
+            "default": "."
+          },
+          "file_pattern": {
+            "type": "string",
+            "description": "文件名模式",
+            "default": "*"
+          },
+          "hours_ago": {
+            "type": "integer",
+            "description": "过去N小时内修改的文件",
+            "minimum": 1
+          }
+        },
+        "required": ["hours_ago"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {"type": "string"},
+                "mtime": {"type": "number", "description": "修改时间(Unix时间戳)"}
+              },
+              "required": ["path", "mtime"]
+            }
+          },
+          "total_found": {"type": "integer"}
+        },
+        "required": ["files", "total_found"]
+      },
+      "errors": [
+        {
+          "code": "PATH_SECURITY_ERROR",
+          "message": "路径不在项目根目录内"
+        }
+      ],
+      "requirements": ["FR-012"]
+    }
+  ]
+}

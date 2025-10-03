@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(powershell:*)",
+      "Bash(uv sync:*)",
+      "Bash($env:PROJECT_ROOT=\"C:\\Users\\Ge\\Documents\\github\\agent-mcp\")",
+      "Bash(uv run pytest:*)",
+      "Bash(tree:*)",
+      "Bash(python -m pytest tests/contract/ -v --tb=short)",
+      "Bash(python -m pytest tests/integration/ -v --tb=short)",
+      "Bash(python -m pytest tests/contract/ --collect-only -q)",
+      "Bash(python -m pytest tests/integration/ --collect-only -q)",
+      "Bash(python -m pytest tests/unit/test_validators.py -v)",
+      "Bash(python -m pytest tests/unit/test_file_detector.py -v)",
+      "Bash(python -m pytest tests/unit/test_config.py -v)",
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
