@@ -59,15 +59,59 @@ Search for "TODO" comments in Python files
 
 **Need more details?** See the [Complete Configuration Guide](CONFIGURATION.md)
 
-## Features
+## 核心能力
 
-**10 MCP Tools** organized in 3 categories:
+Context MCP 提供 **10 个 MCP 工具**，让 AI Agent 能够高效地浏览、搜索和读取项目代码。
 
-- **Navigation** (2): `list_directory`, `show_tree`
-- **Search** (4): `search_in_file`, `search_in_files`, `find_files_by_name`, `find_recently_modified_files`
-- **Read** (4): `read_entire_file`, `read_file_lines`, `read_file_tail`, `read_files`
+### 📁 导航工具（2个）
 
-For detailed tool documentation, see [CONFIGURATION.md](CONFIGURATION.md).
+- **`list_directory`** - 列出目录内容，支持排序和限制数量
+  - **用例**：快速查看项目结构、定位文件位置、了解模块组织
+  - **示例**：`列出 src/ 目录下的所有文件`
+
+- **`show_tree`** - 以树状结构展示目录层次，支持深度限制
+  - **用例**：可视化项目架构、理解代码层次关系、生成目录文档
+  - **示例**：`显示项目根目录的树状结构，深度为3层`
+
+### 🔍 搜索工具（4个）
+
+- **`search_in_file`** - 在单个文件中搜索文本或正则表达式
+  - **用例**：快速定位函数定义、查找特定配置项、分析代码片段
+  - **示例**：`在 config.py 中搜索 "DATABASE"`
+
+- **`search_in_files`** - 跨多个文件递归搜索，支持正则表达式和排除模式
+  - **用例**：查找所有 TODO 注释、定位 API 调用、追踪变量使用、代码审计
+  - **示例**：`在所有 Python 文件中搜索 "TODO" 注释，排除测试文件`
+
+- **`find_files_by_name`** - 按文件名查找（支持通配符）
+  - **用例**：快速定位特定文件、查找同名文件、批量文件操作
+  - **示例**：`查找所有名为 config.py 的文件` 或 `查找所有 *.test.ts 文件`
+
+- **`find_recently_modified_files`** - 按最近修改时间查找文件
+  - **用例**：追踪最近改动、快速定位最新代码、回顾开发进展
+  - **示例**：`查找最近 7 天内修改的所有文件`
+
+### 📖 读取工具（4个）
+
+- **`read_entire_file`** - 读取完整文件内容
+  - **用例**：分析源代码、理解配置文件、检查文档内容
+  - **示例**：`读取 README.md 的完整内容`
+
+- **`read_file_lines`** - 读取文件的指定行范围
+  - **用例**：精确查看代码片段、分析特定函数、提取配置项
+  - **示例**：`读取 server.py 的第 50-100 行`
+
+- **`read_file_tail`** - 读取文件末尾 N 行
+  - **用例**：查看日志文件、检查最新添加的内容、快速浏览文件结尾
+  - **示例**：`读取 application.log 的最后 50 行`
+
+- **`read_files`** - 批量读取多个文件
+  - **用例**：对比多个文件、批量分析代码、生成综合报告
+  - **示例**：`同时读取 package.json 和 requirements.txt`
+
+> 💡 **提示**：所有工具都经过安全加固，只支持只读操作，路径严格限制在配置的 PROJECT_ROOT 内。
+
+详细工具文档请参考 [CONFIGURATION.md](CONFIGURATION.md)。
 
 ## Installation & Configuration
 

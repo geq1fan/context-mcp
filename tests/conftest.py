@@ -1,4 +1,4 @@
-"""Pytest configuration for agent-mcp tests.
+"""Pytest configuration for context-mcp tests.
 
 Sets up PROJECT_ROOT environment variable for all tests.
 """
