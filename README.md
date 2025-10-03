@@ -11,21 +11,17 @@
 
 **Quick Links**: 📖 [Configuration Guide](CONFIGURATION.md) | 🚀 [Quick Start](#quick-start) | 🐛 [Troubleshooting](CONFIGURATION.md#troubleshooting-configuration) | 🤝 [Contributing](CONTRIBUTING.md)
 
-## Quick Start
+## 快速开始
 
-### 1. Install context-mcp
-```bash
-# No installation needed with uvx!
-# Just configure in Claude Desktop (see step 2)
-```
+### 方式一：Claude Desktop 配置
 
-### 2. Configure Claude Desktop
+**1. 编辑配置文件**
 
-Edit your Claude Desktop config file:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-Add this configuration:
+**2. 添加配置**（使用 uvx，无需安装）
+
 ```json
 {
   "mcpServers": {
@@ -40,24 +36,61 @@ Add this configuration:
 }
 ```
 
-### 3. Restart Claude Desktop
+**3. 重启应用**
 
-Look for the 🔌 icon to confirm the server is connected.
+重启 Claude Desktop，查看 🔌 图标确认连接成功。
 
-### 4. Try it out!
-
-In Claude Desktop, try:
-```
-Please list the files in my project root directory
-```
-
-or
+**4. 试用**
 
 ```
-Search for "TODO" comments in Python files
+列出项目根目录的所有文件
 ```
 
-**Need more details?** See the [Complete Configuration Guide](CONFIGURATION.md)
+```
+在 Python 文件中搜索所有 TODO 注释
+```
+
+### 方式二：Claude Code 配置
+
+**1. 添加 MCP 服务器**
+
+```bash
+claude mcp add context-mcp -- uvx context-mcp
+```
+
+**2. 设置环境变量**
+
+编辑 `~/.claude/mcp.json` 添加：
+
+```json
+{
+  "mcpServers": {
+    "context-mcp": {
+      "env": {
+        "PROJECT_ROOT": "/absolute/path/to/your/project"
+      }
+    }
+  }
+}
+```
+
+**3. 重启 Claude Code**
+
+重启后工具会自动加载。
+
+**4. 试用**
+
+```
+显示项目的树状结构
+```
+
+```
+查找最近 3 天修改的所有文件
+```
+
+---
+
+**需要更多配置选项？** 查看 [完整配置指南](CONFIGURATION.md)
 
 ## 核心能力
 
@@ -113,32 +146,6 @@ Context MCP 提供 **10 个 MCP 工具**，让 AI Agent 能够高效地浏览、
 
 详细工具文档请参考 [CONFIGURATION.md](CONFIGURATION.md)。
 
-## Installation & Configuration
-
-**Simple 3-step setup:**
-
-1. **No installation needed** - uses `uvx` to run directly
-2. **Configure Claude Desktop** - add to `claude_desktop_config.json`:
-   ```json
-   {
-     "mcpServers": {
-       "context-mcp": {
-         "command": "uvx",
-         "args": ["context-mcp"],
-         "env": {
-           "PROJECT_ROOT": "/absolute/path/to/your/project"
-         }
-       }
-     }
-   }
-   ```
-3. **Restart Claude Desktop** - look for 🔌 icon
-
-📖 **Detailed configuration**: See [CONFIGURATION.md](CONFIGURATION.md) for:
-- Platform-specific setup (macOS/Windows/Linux)
-- Multiple project configuration
-- Local development setup
-- Troubleshooting guide
 
 ## Security
 
@@ -147,19 +154,9 @@ Context MCP 提供 **10 个 MCP 工具**，让 AI Agent 能够高效地浏览、
 - **Binary File Protection**: Refuses to read binary files as text
 - **Permission Handling**: Graceful handling of permission errors
 
-## Common Issues
+## 常见问题
 
-**Quick fixes for common problems:**
-
-| Issue | Solution |
-|-------|----------|
-| Server not showing in Claude | Verify JSON syntax, check `uvx context-mcp` works, restart Claude Desktop |
-| `PROJECT_ROOT not set` | Add `PROJECT_ROOT` to env config (must be absolute path) |
-| Search timeouts | Increase `SEARCH_TIMEOUT` or install `ripgrep` |
-| Permission denied | Check file permissions, grant necessary access |
-| Binary file errors | Expected behavior - only text files supported |
-
-📖 **Full troubleshooting guide**: See [CONFIGURATION.md#troubleshooting-configuration](CONFIGURATION.md#troubleshooting-configuration)
+遇到问题？查看 [完整故障排查指南](CONFIGURATION.md#troubleshooting-configuration)
 
 ## Development
 
@@ -198,17 +195,10 @@ PROJECT_ROOT=$(pwd) uv run pytest --cov=agent_mcp
 
 ## License
 
-**MIT License** - Copyright (c) 2025 Context MCP Team
+MIT License - 完整内容请查看 [LICENSE](LICENSE) 文件。
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-**What this means:**
-- ✅ Commercial use allowed
-- ✅ Modification allowed
-- ✅ Distribution allowed
-- ✅ Private use allowed
-- ⚠️ No warranty provided
-- ⚠️ No liability accepted
+- ✅ 允许商业使用、修改和分发
+- ⚠️ 不提供任何担保
 
 ## Contributing
 
