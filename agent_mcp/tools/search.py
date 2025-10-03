@@ -119,6 +119,12 @@ def search_in_files(
     timed_out = False
     start_time = time.time()
 
+    try:
+        search_root_rel = abs_path.relative_to(config.root_path)
+    except ValueError:
+        search_root_rel = Path('.')
+    search_root_parts = tuple(part for part in search_root_rel.parts if part not in ('.',))
+
     # Try to use rg (ripgrep) first
     rg_cmd = shutil.which("rg")
     if rg_cmd:
@@ -174,10 +180,15 @@ def search_in_files(
 
                 try:
                     file_path = Path(file_str)
-                    # Make path absolute if it's relative
                     if not file_path.is_absolute():
-                        file_path = abs_path / file_str
-                    # Get relative path from root
+                        normalized_parts = tuple(part for part in file_path.parts if part not in ('.',))
+                        # Avoid duplicating the search root when ripgrep already returned a project-relative path
+                        if search_root_parts and normalized_parts[:len(search_root_parts)] == search_root_parts:
+                            file_path = (config.root_path / file_path).resolve()
+                        else:
+                            file_path = (abs_path / file_path).resolve()
+                    else:
+                        file_path = file_path.resolve()
                     file_rel = file_path.relative_to(config.root_path)
 
                     matches.append({
