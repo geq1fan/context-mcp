@@ -1,4 +1,4 @@
-"""Logging configuration for Agent MCP server.
+"""Logging configuration for Context MCP server.
 
 Implements TimedRotatingFileHandler with 7-day retention period.
 """

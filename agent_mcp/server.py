@@ -1,9 +1,9 @@
-"""FastMCP server entry point for Agent MCP.
+"""FastMCP server entry point for Context MCP.
 
-Registers all 10 MCP tools and starts the server.
+Registers all 11 MCP tools and starts the server.
 """
 from fastmcp import FastMCP
-from agent_mcp.config import load_config, config
+from agent_mcp.config import load_config
 from agent_mcp.utils.logger import setup_logging, logger
 from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
 from agent_mcp.tools.search import (
@@ -235,7 +235,7 @@ def main():
     try:
         # Load configuration
         cfg = load_config()
-        logger_instance.info(f"Agent MCP Server starting...")
+        logger_instance.info(f"Context MCP Server starting...")
         logger_instance.info(f"Project root: {cfg.root_path}")
         logger_instance.info(f"Search timeout: {cfg.search_timeout}s")
         logger_instance.info(f"Log retention: {cfg.log_retention_days} days")

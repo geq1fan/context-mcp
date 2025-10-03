@@ -1,4 +1,4 @@
-"""Configuration management for Agent MCP server.
+"""Configuration management for Context MCP server.
 
 Loads configuration from environment variables with validation.
 """

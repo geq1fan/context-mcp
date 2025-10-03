@@ -1,4 +1,4 @@
-"""Agent MCP - MCP server for project context integration.
+"""Context MCP - MCP server for project context integration.
 
 Provides read-only filesystem operations for AI agents to analyze projects.
 """

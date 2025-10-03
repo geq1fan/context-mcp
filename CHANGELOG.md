@@ -112,7 +112,7 @@ See [GitHub Issues](https://github.com/geq1fan/context-mcp/issues) for planned f
 ## Release Notes
 
 ### v0.1.0 - Initial Release
-First public release of Agent MCP, providing AI agents with secure, read-only access to project codebases through the Model Context Protocol.
+First public release of Context MCP, providing AI agents with secure, read-only access to project codebases through the Model Context Protocol.
 
 **Highlights**:
 - ✅ 11 production-ready MCP tools (including read_project_context in unreleased)

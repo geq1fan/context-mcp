@@ -102,7 +102,7 @@ Steps to Reproduce:
 Environment:
 - OS: Ubuntu 22.04
 - Python: 3.11.5
-- Context MCP: 0.1.0
+- context-mcp: 0.1.0
 
 Proposed Fix:
 [Optional suggestions]

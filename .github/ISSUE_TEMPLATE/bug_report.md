@@ -12,7 +12,7 @@ A clear and concise description of what the bug is.
 
 ## Steps to Reproduce
 
-1. Configure agent-mcp with '...'
+1. Configure context-mcp with '...'
 2. Run command '...'
 3. See error
 
@@ -28,7 +28,7 @@ What actually happened.
 
 - **OS**: [e.g., macOS 14.0, Windows 11, Ubuntu 22.04]
 - **Python Version**: [e.g., 3.11.5]
-- **Agent MCP Version**: [e.g., 0.1.0]
+- **Context MCP Version**: [e.g., 0.1.0]
 - **Claude Desktop Version**: [if applicable]
 - **Installation Method**: [uvx / uv / pip]
 
@@ -40,7 +40,7 @@ What actually happened.
 ```json
 {
   "mcpServers": {
-    "agent-mcp": {
+    "context-mcp": {
       // Your configuration here (remove sensitive paths)
     }
   }
@@ -51,7 +51,7 @@ What actually happened.
 ## Logs
 
 <details>
-<summary>Agent MCP Log (agent_mcp.log)</summary>
+<summary>Context MCP Log (agent_mcp.log)</summary>
 
 ```
 Paste relevant log lines here

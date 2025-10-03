@@ -11,7 +11,7 @@ This quickstart guide demonstrates how to use the `read_project_context` MCP too
 
 ## Prerequisites
 
-- Agent MCP server installed and configured
+- Context MCP server installed and configured
 - PROJECT_ROOT environment variable set
 - (Optional) AGENTS.md and/or CLAUDE.md in your project root
 
