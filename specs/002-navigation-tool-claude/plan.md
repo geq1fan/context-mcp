@@ -49,10 +49,10 @@ Add a new MCP tool `read_project_context` to the Navigation category that discov
 **Note**: Constitution file is a template. Using existing project patterns as constitutional principles.
 
 ### Existing Project Patterns (Constitutional)
-- ✅ **Library-First**: Feature implemented as library function in `agent_mcp/tools/navigation.py`
+- ✅ **Library-First**: Feature implemented as library function in `context_mcp/tools/navigation.py`
 - ✅ **MCP Tool Pattern**: Exposed via FastMCP decorator in `server.py`
 - ✅ **Three-Layer Testing**: Contract + Integration + Unit tests required
-- ✅ **Path Security**: Use existing `PathValidator` from `agent_mcp/validators/`
+- ✅ **Path Security**: Use existing `PathValidator` from `context_mcp/validators/`
 - ✅ **Error Handling**: Follow existing tool patterns with structured error responses
 - ✅ **Config-Based**: Use existing `config.py` for PROJECT_ROOT access
 
@@ -83,7 +83,7 @@ specs/[###-feature]/
 
 ### Source Code (repository root)
 ```
-agent_mcp/
+context_mcp/
 ├── tools/
 │   ├── navigation.py        # [MODIFY] Add read_project_context() function
 │   ├── search.py            # [NO CHANGE]
@@ -106,7 +106,7 @@ tests/
     └── test_navigation_unit.py        # [CREATE] Unit tests for helper functions
 ```
 
-**Structure Decision**: Single project (MCP server library). This feature extends the existing Navigation tools category by adding one new tool function to `agent_mcp/tools/navigation.py` and registering it in `server.py`. All existing infrastructure (validators, config, logging) will be reused. Tests follow the established three-layer pattern (contract/integration/unit).
+**Structure Decision**: Single project (MCP server library). This feature extends the existing Navigation tools category by adding one new tool function to `context_mcp/tools/navigation.py` and registering it in `server.py`. All existing infrastructure (validators, config, logging) will be reused. Tests follow the established three-layer pattern (contract/integration/unit).
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -177,7 +177,7 @@ tests/
    - Test error handling scenarios
 
 3. **Implementation Tasks**:
-   - Add read_project_context() function to agent_mcp/tools/navigation.py
+   - Add read_project_context() function to context_mcp/tools/navigation.py
    - Register MCP tool in server.py
    - Implement security validation using existing PathValidator
 
@@ -210,8 +210,8 @@ Validation (run quickstart scenarios)
 - **MODIFY**: tests/contract/test_navigation_contract.py (+80 lines)
 - **MODIFY**: tests/integration/test_full_workflow.py (+40 lines)
 - **MODIFY**: tests/integration/test_edge_cases.py (+60 lines)
-- **MODIFY**: agent_mcp/tools/navigation.py (+60 lines)
-- **MODIFY**: agent_mcp/server.py (+15 lines)
+- **MODIFY**: context_mcp/tools/navigation.py (+60 lines)
+- **MODIFY**: context_mcp/server.py (+15 lines)
 
 **Estimated Output**: 12-15 numbered, ordered tasks in tasks.md
 

@@ -1,7 +1,7 @@
 """Unit tests for binary file detector."""
 
 import pytest
-from agent_mcp.utils.file_detector import (
+from context_mcp.utils.file_detector import (
     is_binary_file,
     assert_text_file,
     BinaryFileError,

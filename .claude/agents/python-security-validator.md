@@ -26,7 +26,7 @@ You are an elite Python security expert specializing in filesystem security, pat
 
 ### Path Validation
 ```python
-from agent_mcp.validators.path_validator import PathValidator, PathSecurityError
+from context_mcp.validators.path_validator import PathValidator, PathSecurityError
 
 validator = PathValidator(project_root)
 try:
@@ -38,7 +38,7 @@ except PathSecurityError as e:
 
 ### Binary File Detection
 ```python
-from agent_mcp.utils.file_detector import assert_text_file, is_binary_file
+from context_mcp.utils.file_detector import assert_text_file, is_binary_file
 
 # Before reading
 assert_text_file(file_path)  # Raises ValueError if binary

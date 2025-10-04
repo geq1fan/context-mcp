@@ -66,7 +66,7 @@ cp .env.example .env
 ### Running the Server Locally
 
 ```bash
-PROJECT_ROOT=/path/to/test/project uv run python -m agent_mcp.server
+PROJECT_ROOT=/path/to/test/project uv run python -m context_mcp.server
 ```
 
 ## Making Changes
@@ -135,7 +135,7 @@ PROJECT_ROOT=$(pwd) uv run pytest tests/integration/  # Integration tests
 PROJECT_ROOT=$(pwd) uv run pytest tests/unit/  # Unit tests
 
 # Run with coverage
-PROJECT_ROOT=$(pwd) uv run pytest --cov=agent_mcp --cov-report=html
+PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp --cov-report=html
 ```
 
 ### Writing Tests
@@ -268,7 +268,7 @@ def search_in_file(
 Understanding the project structure:
 
 ```
-agent_mcp/
+context_mcp/
 ├── __init__.py          # Data models and exceptions
 ├── server.py            # FastMCP server entry point
 ├── config.py            # Environment configuration

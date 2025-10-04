@@ -4,7 +4,7 @@ Tests for: search_in_file, search_in_files, find_files_by_name, find_recently_mo
 """
 
 import pytest
-from agent_mcp.tools.search import (
+from context_mcp.tools.search import (
     search_in_file,
     search_in_files,
     find_files_by_name,

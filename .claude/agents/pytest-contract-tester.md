@@ -117,7 +117,7 @@ markers = [
 
 ### Running Coverage
 ```bash
-PROJECT_ROOT=$(pwd) uv run pytest --cov=agent_mcp --cov-report=html
+PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp --cov-report=html
 ```
 
 ## Common Test Patterns

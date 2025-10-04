@@ -57,7 +57,7 @@ export SEARCH_TIMEOUT=30
 uvx agent-mcp
 
 # 或本地开发模式
-uv run python -m agent_mcp.server
+uv run python -m context_mcp.server
 ```
 
 **预期输出**:
@@ -680,7 +680,7 @@ export SEARCH_TIMEOUT=120
 **症状**: 磁盘空间不足
 **解决**:
 - 检查日志配置是否正确(7天轮转)
-- 手动清理: `rm agent_mcp.log.*`
+- 手动清理: `rm context_mcp.log.*`
 
 ---
 

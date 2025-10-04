@@ -51,7 +51,7 @@ What actually happened.
 ## Logs
 
 <details>
-<summary>Context MCP Log (agent_mcp.log)</summary>
+<summary>Context MCP Log (context_mcp.log)</summary>
 
 ```
 Paste relevant log lines here

@@ -169,7 +169,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 def setup_logging():
     handler = TimedRotatingFileHandler(
-        'agent_mcp.log',
+        'context_mcp.log',
         when='D',
         interval=1,
         backupCount=7
@@ -244,7 +244,7 @@ dependencies = [
 ]
 
 [project.scripts]
-agent-mcp = "agent_mcp.server:main"
+agent-mcp = "context_mcp.server:main"
 ```
 
 ---

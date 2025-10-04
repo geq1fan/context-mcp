@@ -136,8 +136,8 @@ dmypy.json
 cython_debug/
 
 # Context MCP specific files
-agent_mcp.log
-agent_mcp.log.*
+context_mcp.log
+context_mcp.log.*
 
 # IDE specific files
 .vscode/

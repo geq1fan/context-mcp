@@ -78,7 +78,7 @@ specs/[###-feature]/
 
 ### Source Code (repository root)
 ```
-agent_mcp/                    # Python包主目录
+context_mcp/                    # Python包主目录
 ├── __init__.py
 ├── server.py                 # FastMCP服务器入口
 ├── config.py                 # 配置管理(环境变量读取)
@@ -185,7 +185,7 @@ README.md                     # 项目文档
 **Task Generation Strategy**:
 
 1. **基础设施任务** (优先级最高):
-   - 创建项目结构(agent_mcp/, tests/)
+   - 创建项目结构(context_mcp/, tests/)
    - 配置pyproject.toml (uv配置)
    - 环境变量模板 (.env.example)
    - 日志配置 (utils/logger.py)

@@ -139,9 +139,9 @@ All technical decisions were resolved during specification phase through market 
 ## Technical Implementation Notes
 
 ### Reuse Existing Components
-- **PathValidator** (agent_mcp/validators/path_validator.py): Security checks
-- **config.PROJECT_ROOT** (agent_mcp/config.py): Base directory
-- **logger** (agent_mcp/utils/logger.py): Structured logging
+- **PathValidator** (context_mcp/validators/path_validator.py): Security checks
+- **config.PROJECT_ROOT** (context_mcp/config.py): Base directory
+- **logger** (context_mcp/utils/logger.py): Structured logging
 - **FastMCP decorator** (server.py): MCP tool registration
 
 ### Implementation Pattern

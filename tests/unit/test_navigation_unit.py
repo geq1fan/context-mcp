@@ -6,7 +6,7 @@ read_project_context tool, including file discovery and response generation.
 
 import pytest
 from unittest.mock import patch, MagicMock
-from agent_mcp.tools.navigation import _discover_context_file, _generate_response
+from context_mcp.tools.navigation import _discover_context_file, _generate_response
 
 
 @pytest.mark.unit
@@ -110,7 +110,7 @@ class TestDiscoverContextFile:
         file_path.write_text("# Content", encoding="utf-8")
 
         # Mock PathValidator instance to raise exception
-        with patch("agent_mcp.tools.navigation.PathValidator") as MockValidator:
+        with patch("context_mcp.tools.navigation.PathValidator") as MockValidator:
             mock_instance = MagicMock()
             mock_instance.validate.side_effect = Exception(
                 "PATH_SECURITY_ERROR: Path outside root"

@@ -17,18 +17,18 @@ def setup_test_environment():
 
     # Re-import config module to load configuration with new environment
     import importlib
-    import agent_mcp.config
+    import context_mcp.config
 
-    importlib.reload(agent_mcp.config)
+    importlib.reload(context_mcp.config)
 
     # Also reload tool modules to pick up new config
-    import agent_mcp.tools.navigation
-    import agent_mcp.tools.search
-    import agent_mcp.tools.read
+    import context_mcp.tools.navigation
+    import context_mcp.tools.search
+    import context_mcp.tools.read
 
-    importlib.reload(agent_mcp.tools.navigation)
-    importlib.reload(agent_mcp.tools.search)
-    importlib.reload(agent_mcp.tools.read)
+    importlib.reload(context_mcp.tools.navigation)
+    importlib.reload(context_mcp.tools.search)
+    importlib.reload(context_mcp.tools.read)
 
     yield
 

@@ -9,19 +9,19 @@ from pathlib import Path
 
 
 def setup_logging(
-    log_file: str = "agent_mcp.log", level: int = logging.INFO
+    log_file: str = "context_mcp.log", level: int = logging.INFO
 ) -> logging.Logger:
     """Configure logging with timed rotation.
 
     Args:
-        log_file: Log file name (default: agent_mcp.log)
+        log_file: Log file name (default: context_mcp.log)
         level: Logging level (default: INFO)
 
     Returns:
         Configured logger instance
     """
     # Create logger
-    logger = logging.getLogger("agent_mcp")
+    logger = logging.getLogger("context_mcp")
     logger.setLevel(level)
 
     # Avoid duplicate handlers

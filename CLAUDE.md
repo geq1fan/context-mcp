@@ -16,7 +16,7 @@
 ## 项目结构
 
 ```
-agent_mcp/
+context_mcp/
 ├── server.py           # FastMCP服务器入口
 ├── config.py           # 环境变量配置
 ├── tools/              # MCP工具实现

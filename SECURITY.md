@@ -53,7 +53,7 @@ Context MCP is designed with security as a core principle:
 
 2. **Log File Exposure**: Logs may contain file paths and search queries
    - **Mitigation**: Logs are stored locally with 7-day retention
-   - **Recommendation**: Review `agent_mcp.log` location and permissions
+   - **Recommendation**: Review `context_mcp.log` location and permissions
 
 3. **Search Performance**: Complex searches may consume CPU
    - **Mitigation**: Configurable timeout (default 60 seconds)
@@ -142,7 +142,7 @@ Proposed Fix:
    - Do not run as administrator/root
 
 3. **Monitor Logs**:
-   - Review `agent_mcp.log` periodically
+   - Review `context_mcp.log` periodically
    - Check for unexpected file access patterns
 
 4. **Exclude Sensitive Directories**:

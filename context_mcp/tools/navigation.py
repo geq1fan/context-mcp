@@ -5,10 +5,10 @@ Provides directory listing and tree visualization capabilities.
 
 from pathlib import Path
 from typing import Literal
-from agent_mcp.config import config
-from agent_mcp.validators.path_validator import PathValidator
-from agent_mcp import FileEntry
-from agent_mcp.utils.logger import logger
+from context_mcp.config import config
+from context_mcp.validators.path_validator import PathValidator
+from context_mcp import FileEntry
+from context_mcp.utils.logger import logger
 
 
 # Initialize path validator with project root
@@ -288,7 +288,7 @@ def read_project_context() -> dict:
         RuntimeError: If PROJECT_ROOT is not set or invalid
     """
     # Get project root from config
-    from agent_mcp.config import config as cfg
+    from context_mcp.config import config as cfg
 
     if not cfg or not cfg.root_path:
         raise RuntimeError("PROJECT_ROOT is not configured")

@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Project Structure
 ```
-agent_mcp/
+context_mcp/
 ├── server.py           # FastMCP server entry point
 ├── config.py           # Environment variable configuration
 ├── tools/              # 10 MCP tool implementations

@@ -4,7 +4,7 @@ Tests for: read_entire_file, read_file_lines, read_file_tail, read_files
 """
 
 import pytest
-from agent_mcp.tools.read import (
+from context_mcp.tools.read import (
     read_entire_file,
     read_file_lines,
     read_file_tail,

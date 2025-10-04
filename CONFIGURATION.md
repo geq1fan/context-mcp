@@ -72,7 +72,7 @@
   "mcpServers": {
     "context-mcp-dev": {
       "command": "uv",
-      "args": ["run", "python", "-m", "agent_mcp.server"],
+      "args": ["run", "python", "-m", "context_mcp.server"],
       "cwd": "/path/to/context-mcp-repo",
       "env": {
         "PROJECT_ROOT": "/path/to/test/project",
@@ -200,7 +200,7 @@ uvx context-mcp
 
 # Or test with uv (local development)
 cd /path/to/context-mcp
-uv run python -m agent_mcp.server
+uv run python -m context_mcp.server
 ```
 
 ### 2. Check Logs
@@ -210,7 +210,7 @@ uv run python -m agent_mcp.server
 - Windows: `%APPDATA%\Claude\logs\mcp*.log`
 
 **Server logs**:
-- Location: `agent_mcp.log` (in working directory)
+- Location: `context_mcp.log` (in working directory)
 
 ### 3. Test MCP Tools
 
@@ -290,7 +290,7 @@ Please use context-mcp to read the README.md file
   "mcpServers": {
     "agent-mcp": {
       "command": "/usr/local/bin/python3.11",
-      "args": ["-m", "agent_mcp.server"],
+      "args": ["-m", "context_mcp.server"],
       "env": {
         "PROJECT_ROOT": "/path/to/project",
         "PYTHONPATH": "/path/to/agent-mcp"
@@ -347,7 +347,7 @@ Please use context-mcp to read the README.md file
 ```json
 {
   "command": "uv",
-  "args": ["run", "python", "-m", "agent_mcp.server"],
+  "args": ["run", "python", "-m", "context_mcp.server"],
   "cwd": "/path/to/context-mcp-dev"
 }
 ```

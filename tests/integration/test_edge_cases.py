@@ -16,7 +16,7 @@ class TestSecurityBoundaries:
 
     def test_path_traversal_attack_list_directory(self):
         """Test path traversal attack is blocked in list_directory."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         with pytest.raises(Exception) as exc_info:
             list_directory(path="../../etc")
@@ -27,7 +27,7 @@ class TestSecurityBoundaries:
 
     def test_path_traversal_attack_read_file(self):
         """Test path traversal attack is blocked in read operations."""
-        from agent_mcp.tools.read import read_entire_file
+        from context_mcp.tools.read import read_entire_file
 
         with pytest.raises(Exception) as exc_info:
             read_entire_file(file_path="../../../etc/passwd")
@@ -38,7 +38,7 @@ class TestSecurityBoundaries:
 
     def test_path_traversal_attack_search(self):
         """Test path traversal attack is blocked in search operations."""
-        from agent_mcp.tools.search import search_in_files
+        from context_mcp.tools.search import search_in_files
 
         with pytest.raises(Exception) as exc_info:
             search_in_files(query="test", path="../../etc")
@@ -53,7 +53,7 @@ class TestEmptyAndInvalidInputs:
 
     def test_empty_directory(self):
         """Test listing an empty directory."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         # Create temporary empty directory within project
         with tempfile.TemporaryDirectory(dir=".") as tmpdir:
@@ -65,7 +65,7 @@ class TestEmptyAndInvalidInputs:
 
     def test_nonexistent_directory(self):
         """Test accessing non-existent directory."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         with pytest.raises(Exception) as exc_info:
             list_directory(path="nonexistent_dir_xyz_123")
@@ -76,7 +76,7 @@ class TestEmptyAndInvalidInputs:
 
     def test_nonexistent_file(self):
         """Test reading non-existent file."""
-        from agent_mcp.tools.read import read_entire_file
+        from context_mcp.tools.read import read_entire_file
 
         with pytest.raises(Exception) as exc_info:
             read_entire_file(file_path="nonexistent_file_xyz_123.txt")
@@ -90,7 +90,7 @@ class TestEmptyAndInvalidInputs:
 
     def test_search_no_matches(self):
         """Test search with no matches using a very unique string unlikely to exist."""
-        from agent_mcp.tools.search import search_in_files
+        from context_mcp.tools.search import search_in_files
 
         # Use an extremely unique query string with special markers
         result = search_in_files(
@@ -105,7 +105,7 @@ class TestEmptyAndInvalidInputs:
 
     def test_find_no_matching_files(self):
         """Test find with no matching files."""
-        from agent_mcp.tools.search import find_files_by_name
+        from context_mcp.tools.search import find_files_by_name
 
         result = find_files_by_name(name_pattern="*.nonexistent_extension_xyz")
         assert result["total_found"] == 0
@@ -117,7 +117,7 @@ class TestInvalidLineRanges:
 
     def test_line_range_out_of_bounds(self):
         """Test reading lines beyond file length."""
-        from agent_mcp.tools.read import read_file_lines
+        from context_mcp.tools.read import read_file_lines
 
         # Try to read lines way beyond file length
         with pytest.raises(Exception):
@@ -128,7 +128,7 @@ class TestInvalidLineRanges:
 
     def test_line_range_start_greater_than_end(self):
         """Test invalid line range where start > end."""
-        from agent_mcp.tools.read import read_file_lines
+        from context_mcp.tools.read import read_file_lines
 
         with pytest.raises(Exception) as exc_info:
             read_file_lines(file_path="pyproject.toml", start_line=10, end_line=5)
@@ -143,7 +143,7 @@ class TestLimitAndTruncation:
 
     def test_list_directory_with_limit(self):
         """Test directory listing respects limit."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         # List with limit
         result = list_directory(path=".", limit=3)
@@ -153,7 +153,7 @@ class TestLimitAndTruncation:
 
     def test_list_directory_no_limit(self):
         """Test directory listing with no limit (-1)."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         result = list_directory(path=".", limit=-1)
         assert len(result["entries"]) == result["total"]
@@ -165,7 +165,7 @@ class TestBatchOperationResilience:
 
     def test_read_files_mixed_success_failure(self):
         """Test batch read with mix of valid and invalid files."""
-        from agent_mcp.tools.read import read_files
+        from context_mcp.tools.read import read_files
 
         file_paths = [
             "pyproject.toml",  # Valid
@@ -195,7 +195,7 @@ class TestSortingBehavior:
 
     def test_sort_by_time_descending(self):
         """Test sorting by modification time."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         result = list_directory(path=".", sort_by="time", order="desc")
         entries = result["entries"]
@@ -206,7 +206,7 @@ class TestSortingBehavior:
 
     def test_sort_by_name_ascending(self):
         """Test alphabetical sorting."""
-        from agent_mcp.tools.navigation import list_directory
+        from context_mcp.tools.navigation import list_directory
 
         result = list_directory(path=".", sort_by="name", order="asc")
         entries = result["entries"]
@@ -221,7 +221,7 @@ class TestMaxDepthBehavior:
 
     def test_max_depth_one(self):
         """Test tree with max_depth=1 shows only current level."""
-        from agent_mcp.tools.navigation import show_tree
+        from context_mcp.tools.navigation import show_tree
 
         result = show_tree(path=".", max_depth=1)
         tree = result["tree"]
@@ -241,7 +241,7 @@ class TestMaxDepthBehavior:
 
     def test_max_depth_maximum_limit(self):
         """Test tree with max_depth=10 (maximum allowed)."""
-        from agent_mcp.tools.navigation import show_tree
+        from context_mcp.tools.navigation import show_tree
 
         result = show_tree(path=".", max_depth=10)
         assert "tree" in result
@@ -259,8 +259,8 @@ class TestContextFileEdgeCases:
         if sys.platform == "win32":
             pytest.skip("Permission testing requires POSIX platform")
 
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create AGENTS.md with no read permissions
         agents_file = tmp_path / "AGENTS.md"
@@ -268,7 +268,7 @@ class TestContextFileEdgeCases:
         agents_file.chmod(0o000)  # Remove all permissions
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         try:
             # Execute
@@ -296,15 +296,15 @@ class TestContextFileEdgeCases:
     def test_context_file_large_size_warning(self, tmp_path, monkeypatch, caplog):
         """Test warning is logged for large context files (>1MB)."""
         import logging
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create file >1MB
         large_content = "A" * (1024 * 1024 + 200)  # 1MB + 200 bytes
         (tmp_path / "AGENTS.md").write_text(large_content, encoding="utf-8")
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute with log capturing
         with caplog.at_level(logging.WARNING):
@@ -330,15 +330,15 @@ class TestContextFileEdgeCases:
 
     def test_context_file_invalid_encoding(self, tmp_path, monkeypatch):
         """Test handling of invalid UTF-8 encoding in context file."""
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create CLAUDE.md with invalid UTF-8 bytes
         claude_file = tmp_path / "CLAUDE.md"
         claude_file.write_bytes(b"# Valid Header\n\xff\xfe\nInvalid UTF-8 bytes here")
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -361,15 +361,15 @@ class TestContextFileEdgeCases:
 
     def test_context_file_empty_file(self, tmp_path, monkeypatch):
         """Test handling of empty context file (0 bytes)."""
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create empty files
         (tmp_path / "AGENTS.md").write_text("", encoding="utf-8")
         (tmp_path / "CLAUDE.md").write_text("", encoding="utf-8")
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -387,15 +387,15 @@ class TestContextFileEdgeCases:
 
     def test_context_file_whitespace_only(self, tmp_path, monkeypatch):
         """Test handling of context file with only whitespace."""
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create files with only whitespace
         whitespace_content = "   \n\n\t\t  \n   "
         (tmp_path / "AGENTS.md").write_text(whitespace_content, encoding="utf-8")
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -408,8 +408,8 @@ class TestContextFileEdgeCases:
 
     def test_context_file_with_special_characters(self, tmp_path, monkeypatch):
         """Test handling of context files with special characters and unicode."""
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create file with various special characters
         special_content = """# Agent Instructions 🤖
@@ -431,7 +431,7 @@ class TestContextFileEdgeCases:
         (tmp_path / "CLAUDE.md").write_text(special_content, encoding="utf-8")
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -452,8 +452,8 @@ class TestContextFileEdgeCases:
                 "Symlink testing requires POSIX platform or admin rights on Windows"
             )
 
-        from agent_mcp.tools.navigation import read_project_context
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.tools.navigation import read_project_context
+        from context_mcp.config import ProjectConfig
 
         # Setup: Create actual file and symlink to it
         actual_file = tmp_path / "actual_agents.md"
@@ -464,7 +464,7 @@ class TestContextFileEdgeCases:
         symlink.symlink_to(actual_file)
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()

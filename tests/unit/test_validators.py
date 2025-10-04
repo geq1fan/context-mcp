@@ -1,7 +1,7 @@
 """Unit tests for path validator."""
 
 import pytest
-from agent_mcp.validators.path_validator import PathValidator, PathSecurityError
+from context_mcp.validators.path_validator import PathValidator, PathSecurityError
 
 
 class TestPathValidator:

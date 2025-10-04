@@ -232,7 +232,7 @@ uv sync
 PROJECT_ROOT=$(pwd) uv run pytest
 
 # 运行测试并生成覆盖率报告
-PROJECT_ROOT=$(pwd) uv run pytest --cov=agent_mcp
+PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp
 ```
 
 **测试覆盖率**：121 个测试（61 契约 + 28 集成 + 32 单元），覆盖率 99.2%

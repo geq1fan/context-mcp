@@ -5,10 +5,10 @@ Provides file reading capabilities with encoding detection and partial reading s
 
 import chardet
 from pathlib import Path
-from agent_mcp.config import config
-from agent_mcp.validators.path_validator import PathValidator
-from agent_mcp.utils.file_detector import assert_text_file
-from agent_mcp.utils.logger import logger
+from context_mcp.config import config
+from context_mcp.validators.path_validator import PathValidator
+from context_mcp.utils.file_detector import assert_text_file
+from context_mcp.utils.logger import logger
 
 
 # Initialize path validator

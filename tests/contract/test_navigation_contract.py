@@ -5,7 +5,7 @@ specifications defined in contracts/navigation_tools.json and read_project_conte
 """
 
 import pytest
-from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
+from context_mcp.tools.navigation import list_directory, show_tree, read_project_context
 
 
 class TestListDirectoryContract:
@@ -184,10 +184,10 @@ class TestReadProjectContextContract:
         (tmp_path / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
 
         # Mock config module
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -225,10 +225,10 @@ class TestReadProjectContextContract:
         agents_content = "# Universal Agent Instructions\nProject conventions..."
         (tmp_path / "AGENTS.md").write_text(agents_content, encoding="utf-8")
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -257,10 +257,10 @@ class TestReadProjectContextContract:
         claude_content = "# Claude-specific rules\nCode style preferences..."
         (tmp_path / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -283,10 +283,10 @@ class TestReadProjectContextContract:
     def test_no_files_exist(self, tmp_path, monkeypatch):
         """Test case: Neither AGENTS.md nor CLAUDE.md exist in PROJECT_ROOT."""
         # Setup: Empty directory (no context files)
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -308,10 +308,10 @@ class TestReadProjectContextContract:
         # Setup: Create empty AGENTS.md
         (tmp_path / "AGENTS.md").write_text("", encoding="utf-8")
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -340,10 +340,10 @@ class TestReadProjectContextContract:
         agents_file.write_text("# Protected content", encoding="utf-8")
         agents_file.chmod(0o000)  # Remove all permissions
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         try:
             # Execute
@@ -369,10 +369,10 @@ class TestReadProjectContextContract:
         claude_file = tmp_path / "CLAUDE.md"
         claude_file.write_bytes(b"# Valid start\n\xff\xfe\nInvalid bytes")
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute
         result = read_project_context()
@@ -400,10 +400,10 @@ class TestReadProjectContextContract:
         large_content = "A" * (1024 * 1024 + 100)  # 1MB + 100 bytes
         (tmp_path / "AGENTS.md").write_text(large_content, encoding="utf-8")
 
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         # Execute with log capturing
         with caplog.at_level(logging.WARNING):
@@ -423,10 +423,10 @@ class TestReadProjectContextContract:
 
     def test_output_schema_required_fields(self, tmp_path, monkeypatch):
         """Test that output contains all required fields according to contract."""
-        from agent_mcp.config import ProjectConfig
+        from context_mcp.config import ProjectConfig
 
         mock_config = ProjectConfig(root_path=tmp_path)
-        monkeypatch.setattr("agent_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
 
         result = read_project_context()
 

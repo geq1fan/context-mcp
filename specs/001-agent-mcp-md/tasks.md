@@ -17,10 +17,10 @@
 
 ## Phase 3.1: 项目基础设置
 
-- [x] T001 创建Python包目录结构 agent_mcp/ 和 tests/ 子目录
+- [x] T001 创建Python包目录结构 context_mcp/ 和 tests/ 子目录
 - [x] T002 配置 pyproject.toml 包含uv配置、Python 3.11+要求、fastmcp依赖
 - [x] T003 [P] 创建 .env.example 环境变量模板文件
-- [x] T004 [P] 实现 agent_mcp/utils/logger.py 日志配置(TimedRotatingFileHandler, 7天保留)
+- [x] T004 [P] 实现 context_mcp/utils/logger.py 日志配置(TimedRotatingFileHandler, 7天保留)
 
 ## Phase 3.2: 契约测试优先 (TDD) ⚠️ 必须在3.3前完成
 
@@ -36,36 +36,36 @@
 
 ### 配置与验证层
 
-- [x] T010 [P] 实现 agent_mcp/config.py 配置类(加载PROJECT_ROOT和SEARCH_TIMEOUT环境变量)
-- [x] T011 实现 agent_mcp/validators/path_validator.py 路径安全验证器(使用Path.resolve()防目录遍历)
+- [x] T010 [P] 实现 context_mcp/config.py 配置类(加载PROJECT_ROOT和SEARCH_TIMEOUT环境变量)
+- [x] T011 实现 context_mcp/validators/path_validator.py 路径安全验证器(使用Path.resolve()防目录遍历)
 - [x] T012 编写 tests/unit/test_validators.py 单元测试路径验证器
-- [x] T013 [P] 实现 agent_mcp/utils/file_detector.py 二进制文件检测器(NULL字节检测法)
+- [x] T013 [P] 实现 context_mcp/utils/file_detector.py 二进制文件检测器(NULL字节检测法)
 - [x] T014 编写 tests/unit/test_file_detector.py 单元测试文件检测器
 
 ### 数据模型与异常
 
-- [x] T015 [P] 实现 agent_mcp/__init__.py 定义6个核心实体dataclass(ProjectConfig, FileEntry, SearchMatch, SearchQuery, FileContent, TreeNode)
-- [x] T016 [P] 在 agent_mcp/__init__.py 定义4个异常类(MCPError, PathSecurityError, BinaryFileError, SearchTimeoutError, PermissionDeniedError)
+- [x] T015 [P] 实现 context_mcp/__init__.py 定义6个核心实体dataclass(ProjectConfig, FileEntry, SearchMatch, SearchQuery, FileContent, TreeNode)
+- [x] T016 [P] 在 context_mcp/__init__.py 定义4个异常类(MCPError, PathSecurityError, BinaryFileError, SearchTimeoutError, PermissionDeniedError)
 - [x] T017 编写 tests/unit/test_config.py 单元测试配置加载和验证规则
 
 ### MCP工具实现(按契约分组)
 
-- [x] T018 实现 agent_mcp/tools/navigation.py 中的 list_directory 工具(调用ls命令,支持排序和limit)
-- [x] T019 实现 agent_mcp/tools/navigation.py 中的 show_tree 工具(递归构建TreeNode,支持max_depth)
-- [x] T020 实现 agent_mcp/tools/search.py 中的 search_in_file 工具(单文件rg/grep搜索)
-- [x] T021 实现 agent_mcp/tools/search.py 中的 search_in_files 工具(多文件递归搜索,支持正则、超时)
-- [x] T022 实现 agent_mcp/tools/search.py 中的 find_files_by_name 工具(find命令按名称查找)
-- [x] T023 实现 agent_mcp/tools/search.py 中的 find_recently_modified_files 工具(find -mtime查找最近修改文件)
-- [x] T024 实现 agent_mcp/tools/read.py 中的 read_entire_file 工具(读取完整文件,检测编码)
-- [x] T025 实现 agent_mcp/tools/read.py 中的 read_file_lines 工具(使用sed读取指定行范围)
-- [x] T026 实现 agent_mcp/tools/read.py 中的 read_file_tail 工具(调用tail命令)
-- [x] T027 实现 agent_mcp/tools/read.py 中的 read_files 工具(批量读取,单个错误不影响整体)
+- [x] T018 实现 context_mcp/tools/navigation.py 中的 list_directory 工具(调用ls命令,支持排序和limit)
+- [x] T019 实现 context_mcp/tools/navigation.py 中的 show_tree 工具(递归构建TreeNode,支持max_depth)
+- [x] T020 实现 context_mcp/tools/search.py 中的 search_in_file 工具(单文件rg/grep搜索)
+- [x] T021 实现 context_mcp/tools/search.py 中的 search_in_files 工具(多文件递归搜索,支持正则、超时)
+- [x] T022 实现 context_mcp/tools/search.py 中的 find_files_by_name 工具(find命令按名称查找)
+- [x] T023 实现 context_mcp/tools/search.py 中的 find_recently_modified_files 工具(find -mtime查找最近修改文件)
+- [x] T024 实现 context_mcp/tools/read.py 中的 read_entire_file 工具(读取完整文件,检测编码)
+- [x] T025 实现 context_mcp/tools/read.py 中的 read_file_lines 工具(使用sed读取指定行范围)
+- [x] T026 实现 context_mcp/tools/read.py 中的 read_file_tail 工具(调用tail命令)
+- [x] T027 实现 context_mcp/tools/read.py 中的 read_files 工具(批量读取,单个错误不影响整体)
 
 ## Phase 3.4: 服务器集成
 
-- [x] T028 实现 agent_mcp/server.py FastMCP服务器入口(注册所有10个工具,初始化日志)
+- [x] T028 实现 context_mcp/server.py FastMCP服务器入口(注册所有10个工具,初始化日志)
 - [x] T029 添加 server.py 的 main() 函数作为uvx入口点
-- [x] T030 更新 pyproject.toml 添加 [project.scripts] 配置 agent-mcp = "agent_mcp.server:main"
+- [x] T030 更新 pyproject.toml 添加 [project.scripts] 配置 agent-mcp = "context_mcp.server:main"
 
 ## Phase 3.5: 验证与完善
 
@@ -110,17 +110,17 @@ Task: "编写 tests/contract/test_read_contract.py 测试4个读取工具契约"
 ### 阶段2: 核心模块(Phase 3.3)
 ```bash
 # 同时实现配置和文件检测器(独立模块)
-Task: "实现 agent_mcp/config.py 配置类"
-Task: "实现 agent_mcp/utils/file_detector.py 二进制文件检测器"
-Task: "实现 agent_mcp/__init__.py 定义6个核心实体和4个异常类"
+Task: "实现 context_mcp/config.py 配置类"
+Task: "实现 context_mcp/utils/file_detector.py 二进制文件检测器"
+Task: "实现 context_mcp/__init__.py 定义6个核心实体和4个异常类"
 ```
 
 ### 阶段3: 工具实现(Phase 3.3)
 ```bash
 # navigation.py和read.py的工具可并行(不同文件)
 # 但同一文件内的工具必须顺序实现
-Task: "实现 agent_mcp/tools/navigation.py 中的 list_directory 工具"
-Task: "实现 agent_mcp/tools/read.py 中的 read_entire_file 工具"
+Task: "实现 context_mcp/tools/navigation.py 中的 list_directory 工具"
+Task: "实现 context_mcp/tools/read.py 中的 read_entire_file 工具"
 ```
 
 ## 任务验证标准
@@ -131,7 +131,7 @@ Task: "实现 agent_mcp/tools/read.py 中的 read_entire_file 工具"
 - [x] 错误处理: 所有契约定义的错误码已实现
 - [x] 路径安全: 所有路径参数通过PathValidator验证
 - [x] 二进制检测: 所有读取操作使用file_detector预检查
-- [x] 日志记录: 所有工具调用记录到agent_mcp.log
+- [x] 日志记录: 所有工具调用记录到context_mcp.log
 
 ## 注意事项
 

@@ -42,8 +42,8 @@ Example parallel analysis:
 ### Server Initialization Pattern
 ```python
 from fastmcp import FastMCP
-from agent_mcp.config import load_config
-from agent_mcp.utils.logger import setup_logging
+from context_mcp.config import load_config
+from context_mcp.utils.logger import setup_logging
 
 # Initialize server
 mcp = FastMCP("context-mcp")

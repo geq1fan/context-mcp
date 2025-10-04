@@ -4,16 +4,16 @@ Registers all 11 MCP tools and starts the server.
 """
 
 from fastmcp import FastMCP
-from agent_mcp.config import load_config
-from agent_mcp.utils.logger import setup_logging
-from agent_mcp.tools.navigation import list_directory, show_tree, read_project_context
-from agent_mcp.tools.search import (
+from context_mcp.config import load_config
+from context_mcp.utils.logger import setup_logging
+from context_mcp.tools.navigation import list_directory, show_tree, read_project_context
+from context_mcp.tools.search import (
     search_in_file,
     search_in_files,
     find_files_by_name,
     find_recently_modified_files,
 )
-from agent_mcp.tools.read import (
+from context_mcp.tools.read import (
     read_entire_file,
     read_file_lines,
     read_file_tail,

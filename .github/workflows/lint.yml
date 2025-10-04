@@ -27,10 +27,10 @@ jobs:
         uv pip install ruff mypy
 
     - name: Run ruff (linter)
-      run: uv run ruff check agent_mcp tests
+      run: uv run ruff check context_mcp tests
 
     - name: Run ruff (formatter check)
-      run: uv run ruff format --check agent_mcp tests
+      run: uv run ruff format --check context_mcp tests
 
     - name: Run mypy (type checking)
-      run: uv run mypy agent_mcp --ignore-missing-imports
+      run: uv run mypy context_mcp --ignore-missing-imports

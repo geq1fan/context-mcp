@@ -2,7 +2,7 @@
 
 import pytest
 import os
-from agent_mcp.config import ProjectConfig, load_config
+from context_mcp.config import ProjectConfig, load_config
 
 
 class TestProjectConfig:

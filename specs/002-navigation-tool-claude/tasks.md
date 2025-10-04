@@ -36,7 +36,7 @@ This feature adds the `read_project_context` MCP tool to discover and read AI ag
 ### Contract Tests
 
 - [x] **T002 [P]** Create contract test for `read_project_context` in `tests/contract/test_navigation_contract.py`
-  - Add import: `from agent_mcp.tools.navigation import read_project_context`
+  - Add import: `from context_mcp.tools.navigation import read_project_context`
   - Implement test class: `TestReadProjectContextContract`
   - Load contract from: `specs/002-navigation-tool-claude/contracts/read_project_context.json`
   - Implement 8 test cases from contract:
@@ -131,11 +131,11 @@ This feature adds the `read_project_context` MCP tool to discover and read AI ag
 
 ### Implementation
 
-- [x] **T007** Implement `read_project_context()` function in `agent_mcp/tools/navigation.py`
+- [x] **T007** Implement `read_project_context()` function in `context_mcp/tools/navigation.py`
   - Add import: `from pathlib import Path`
-  - Add import: `from agent_mcp.config import config`
-  - Add import: `from agent_mcp.validators.path_validator import PathValidator`
-  - Add import: `from agent_mcp.utils.logger import logger`
+  - Add import: `from context_mcp.config import config`
+  - Add import: `from context_mcp.validators.path_validator import PathValidator`
+  - Add import: `from context_mcp.utils.logger import logger`
   - Define helper: `_discover_context_file(filename: str, project_root: Path) -> dict`
     - Check file exists: `file_path = project_root / filename`
     - Validate path: `PathValidator.validate_path(file_path, project_root)`
@@ -156,8 +156,8 @@ This feature adds the `read_project_context` MCP tool to discover and read AI ag
   - Approximate addition: 80 lines
   - **Expected**: Unit tests pass, contract tests pass, integration tests pass
 
-- [x] **T008** Register MCP tool in `agent_mcp/server.py`
-  - Add import: `from agent_mcp.tools.navigation import read_project_context`
+- [x] **T008** Register MCP tool in `context_mcp/server.py`
+  - Add import: `from context_mcp.tools.navigation import read_project_context`
   - Add MCP tool registration after existing navigation tools:
     ```python
     @mcp.tool()
@@ -200,7 +200,7 @@ This feature adds the `read_project_context` MCP tool to discover and read AI ag
 - [x] **T010** Run full test suite
   - Run: `pytest tests/ -v`
   - **Expected**: All tests PASS including existing tests (no regressions)
-  - Check coverage: `pytest tests/ --cov=agent_mcp --cov-report=term-missing`
+  - Check coverage: `pytest tests/ --cov=context_mcp --cov-report=term-missing`
   - **Expected**: New code has >80% coverage
 
 - [x] **T011** Manual validation with quickstart scenarios
@@ -234,7 +234,7 @@ This feature adds the `read_project_context` MCP tool to discover and read AI ag
 ## Phase 3.5: Polish & Documentation
 
 - [x] **T013 [P]** Add inline documentation
-  - Review: `agent_mcp/tools/navigation.py`
+  - Review: `context_mcp/tools/navigation.py`
   - Add: Docstrings for helper functions
   - Add: Type hints for all parameters and returns
   - Add: Comments explaining security validations
@@ -301,7 +301,7 @@ Task: "Add edge cases to tests/integration/test_edge_cases.py"
 ### Phase 3.5: Polish Tasks in Parallel
 ```bash
 # Launch T013-T015 together:
-Task: "Add inline documentation to agent_mcp/tools/navigation.py"
+Task: "Add inline documentation to context_mcp/tools/navigation.py"
 Task: "Update CHANGELOG.md with new feature entry"
 Task: "Verify code quality and style compliance"
 ```
@@ -317,8 +317,8 @@ Task: "Verify code quality and style compliance"
 - `tests/contract/test_navigation_contract.py` (+250 lines) - Contract tests for new tool
 - `tests/integration/test_full_workflow.py` (+80 lines) - Workflow scenarios
 - `tests/integration/test_edge_cases.py` (+100 lines) - Edge case testing
-- `agent_mcp/tools/navigation.py` (+80 lines) - Core implementation
-- `agent_mcp/server.py` (+20 lines) - MCP tool registration
+- `context_mcp/tools/navigation.py` (+80 lines) - Core implementation
+- `context_mcp/server.py` (+20 lines) - MCP tool registration
 
 ### Documentation Updated (1)
 - `CHANGELOG.md` (+5 lines) - Feature announcement
