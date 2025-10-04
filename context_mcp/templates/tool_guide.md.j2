@@ -1,0 +1,32 @@
+# Context MCP Tools Usage Guide
+
+Generated: {{ generation_date }} | Tools: {{ tool_count }}{% if filter_applied %} | Filter: {{ filtered_tools }}{% endif %}
+
+{% for category, tools in tools_by_category.items() %}
+## {{ category.capitalize() }} Tools ({{ tools|length }})
+
+{% for tool in tools %}
+### {{ tool.name }}
+**Purpose**: {{ tool.description }}
+
+**Parameters**:
+```json
+{{ tool.input_schema | tojson(indent=2) }}
+```
+
+{% if tool.examples %}
+**Examples**:
+{% for example in tool.examples %}
+```python
+{{ example }}
+```
+{% endfor %}
+{% endif %}
+
+{% if tool.return_format %}
+**Returns**: {{ tool.return_format }}
+{% endif %}
+
+---
+{% endfor %}
+{% endfor %}

@@ -20,6 +20,7 @@ from context_mcp.tools.read import (
     read_file_tail,
     read_files,
 )
+from context_mcp.tools.guide import get_tool_usage_guide
 
 
 # Initialize FastMCP server
@@ -244,6 +245,27 @@ def mcp_read_files(file_paths: list[str]) -> dict:
         dict: files (list), success_count (int), error_count (int)
     """
     return read_files(file_paths)
+
+
+# ============================================================================
+# Register Guide Tools
+# ============================================================================
+
+
+@mcp.tool()
+async def mcp_get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
+    """Returns comprehensive usage documentation for MCP tools.
+
+    Generates Markdown documentation with JSON Schema definitions, descriptions,
+    and usage examples. Supports filtering to specific tools.
+
+    Args:
+        tool_names: Optional list of tool names to include. If None, returns all tools.
+
+    Returns:
+        dict: content (str), metadata (dict), warnings (list, optional)
+    """
+    return await get_tool_usage_guide(mcp, tool_names)
 
 
 # ============================================================================
