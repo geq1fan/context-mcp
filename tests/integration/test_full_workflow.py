@@ -61,7 +61,9 @@ class TestSearchWorkflow:
         from context_mcp.tools.search import search_in_files
 
         # Search Python files for import statements
-        result = search_in_files(query="import", file_pattern="*.py", path="context_mcp")
+        result = search_in_files(
+            query="import", file_pattern="*.py", path="context_mcp"
+        )
         assert result["files_searched"] >= 0
         assert isinstance(result["timed_out"], bool)
 

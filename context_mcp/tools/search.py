@@ -7,11 +7,13 @@ import re
 import subprocess
 import shutil
 import time
+import platform
 from pathlib import Path
 from context_mcp.config import config
 from context_mcp.validators.path_validator import PathValidator
 from context_mcp.utils.file_detector import assert_text_file
 from context_mcp.utils.logger import logger
+from context_mcp.utils.tool_detector import ToolDetector
 
 
 # Initialize path validator
@@ -20,6 +22,9 @@ if config:
     validator = PathValidator(config.root_path)
 else:
     validator = None
+
+# Initialize tool detector
+_tool_detector = ToolDetector()
 
 
 def search_in_file(query: str, file_path: str, use_regex: bool = False) -> dict:
@@ -201,7 +206,96 @@ def search_in_files(
 
         except subprocess.TimeoutExpired:
             timed_out = True
-    else:
+    # Try grep as fallback if ripgrep not available
+    elif shutil.which("grep") and platform.system() != "Windows":
+        # Use grep + find combination for Unix-like systems
+        try:
+            # First, find matching files
+            if file_pattern != "*":
+                find_cmd = ["find", str(abs_path), "-type", "f", "-name", file_pattern]
+            else:
+                find_cmd = ["find", str(abs_path), "-type", "f"]
+
+            find_result = subprocess.run(
+                find_cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout // 2,  # Half timeout for find
+                encoding="utf-8",
+                errors="replace",
+            )
+
+            if find_result.returncode == 0:
+                files_to_search = find_result.stdout.strip().split("\n")
+                remaining_timeout = timeout - (timeout // 2)
+
+                for file_str in files_to_search:
+                    if time.time() - start_time > timeout:
+                        timed_out = True
+                        break
+
+                    if not file_str.strip():
+                        continue
+
+                    # Build grep command
+                    grep_cmd = ["grep", "-n"]  # -n for line numbers
+                    if use_regex:
+                        grep_cmd.append("-E")  # Extended regex
+                    else:
+                        grep_cmd.append("-F")  # Fixed string
+
+                    grep_cmd.extend([query, file_str])
+
+                    try:
+                        grep_result = subprocess.run(
+                            grep_cmd,
+                            capture_output=True,
+                            text=True,
+                            timeout=min(5, remaining_timeout),
+                            encoding="utf-8",
+                            errors="replace",
+                        )
+
+                        # grep returns 0 if matches found, 1 if no matches, >1 for errors
+                        if grep_result.returncode in (0, 1):
+                            for line in grep_result.stdout.splitlines():
+                                if not line.strip():
+                                    continue
+                                if exclude_query and exclude_query in line:
+                                    continue
+
+                                # Parse grep output: "line_number:line_content"
+                                parts = line.split(":", 1)
+                                if len(parts) == 2:
+                                    try:
+                                        line_num = int(parts[0])
+                                        line_content = parts[1]
+
+                                        file_path = Path(file_str)
+                                        file_rel = file_path.relative_to(
+                                            config.root_path
+                                        )
+
+                                        matches.append(
+                                            {
+                                                "file_path": str(file_rel).replace(
+                                                    "\\", "/"
+                                                ),
+                                                "line_number": line_num,
+                                                "line_content": line_content,
+                                            }
+                                        )
+                                    except (ValueError, IndexError):
+                                        continue
+
+                    except (subprocess.TimeoutExpired, FileNotFoundError):
+                        continue
+
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            # If grep fails, fall back to Python
+            pass
+    # Final fallback: manual Python search
+    if not matches and not timed_out:
         # Fallback: manual search
         for file in abs_path.rglob(file_pattern):
             if time.time() - start_time > timeout:
@@ -219,7 +313,9 @@ def search_in_files(
                             continue
                         matches.append(
                             {
-                                "file_path": str(file.relative_to(config.root_path)),
+                                "file_path": str(
+                                    file.relative_to(config.root_path)
+                                ).replace("\\", "/"),
                                 "line_number": match["line_number"],
                                 "line_content": match["line_content"],
                             }
@@ -256,11 +352,80 @@ def find_files_by_name(name_pattern: str, path: str = ".") -> dict:
     if not abs_path.exists():
         raise FileNotFoundError(f"PATH_NOT_FOUND: {path}")
 
-    # Find matching files
     files = []
+
+    # Try fd first if available
+    if _tool_detector.has_fd:
+        try:
+            cmd = ["fd", "--type", "f", name_pattern, str(abs_path)]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                cwd=str(config.root_path),
+                encoding="utf-8",
+                errors="replace",
+            )
+
+            if result.returncode == 0:
+                for line in result.stdout.splitlines():
+                    if not line.strip():
+                        continue
+
+                    try:
+                        file_path = Path(line.strip())
+                        if not file_path.is_absolute():
+                            file_path = (abs_path / file_path).resolve()
+
+                        file_rel = file_path.relative_to(config.root_path)
+                        files.append(str(file_rel).replace("\\", "/"))
+                    except (ValueError, OSError):
+                        continue
+
+                return {"files": files, "total_found": len(files)}
+
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            # Fall through to next fallback
+            pass
+
+    # Try find as fallback on Unix-like systems
+    if not files and shutil.which("find") and platform.system() != "Windows":
+        try:
+            cmd = ["find", str(abs_path), "-type", "f", "-name", name_pattern]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                encoding="utf-8",
+                errors="replace",
+            )
+
+            if result.returncode == 0:
+                for line in result.stdout.splitlines():
+                    if not line.strip():
+                        continue
+
+                    try:
+                        file_path = Path(line.strip())
+                        file_rel = file_path.relative_to(config.root_path)
+                        files.append(str(file_rel).replace("\\", "/"))
+                    except (ValueError, OSError):
+                        continue
+
+                return {"files": files, "total_found": len(files)}
+
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            # Fall through to Python fallback
+            pass
+
+    # Final fallback: Python rglob
     for file in abs_path.rglob(name_pattern):
         if file.is_file():
-            files.append(str(file.relative_to(config.root_path)))
+            files.append(str(file.relative_to(config.root_path)).replace("\\", "/"))
 
     return {"files": files, "total_found": len(files)}
 

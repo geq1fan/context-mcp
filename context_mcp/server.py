@@ -5,7 +5,8 @@ Registers all 11 MCP tools and starts the server.
 
 from fastmcp import FastMCP
 from context_mcp.config import load_config
-from context_mcp.utils.logger import setup_logging
+from context_mcp.utils.logger import setup_logging, logger
+from context_mcp.utils.tool_detector import ToolDetector
 from context_mcp.tools.navigation import list_directory, show_tree, read_project_context
 from context_mcp.tools.search import (
     search_in_file,
@@ -23,6 +24,26 @@ from context_mcp.tools.read import (
 
 # Initialize FastMCP server
 mcp = FastMCP("context-mcp")
+
+# Detect high-performance tools on server startup
+_detector = ToolDetector()
+
+# Log tool availability
+if _detector.has_ripgrep:
+    logger.info("ripgrep detected - using high-performance search")
+else:
+    logger.warning(
+        "ripgrep not available, search_in_files will use grep or Python fallback. "
+        "For better performance, install ripgrep: https://github.com/BurntSushi/ripgrep#installation"
+    )
+
+if _detector.has_fd:
+    logger.info("fd detected - using high-performance file finding")
+else:
+    logger.warning(
+        "fd not available, find_files_by_name will use find or Python fallback. "
+        "For better performance, install fd: https://github.com/sharkdp/fd#installation"
+    )
 
 
 # ============================================================================
