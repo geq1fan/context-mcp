@@ -21,6 +21,7 @@ class ToolDetector:
     """
 
     _instance: Optional["ToolDetector"] = None
+    _initialized: bool
 
     def __new__(cls) -> "ToolDetector":
         """Ensure only one instance exists (singleton pattern)."""
