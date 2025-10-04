@@ -114,7 +114,9 @@ class TestFindFilesByNameFd:
 
     @patch("context_mcp.tools.search.shutil.which")
     @patch("context_mcp.tools.search.subprocess.run")
-    def test_uses_fd_when_available(self, mock_run, mock_which, mock_config, test_files):
+    def test_uses_fd_when_available(
+        self, mock_run, mock_which, mock_config, test_files
+    ):
         """Test that fd is used when available."""
         from context_mcp.tools.search import find_files_by_name
 

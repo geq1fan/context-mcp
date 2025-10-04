@@ -272,7 +272,9 @@ def search_in_files(
                                         line_content = parts[1]
 
                                         file_path = Path(file_str)
-                                        file_rel = file_path.relative_to(config.root_path)
+                                        file_rel = file_path.relative_to(
+                                            config.root_path
+                                        )
 
                                         matches.append(
                                             {
@@ -311,9 +313,9 @@ def search_in_files(
                             continue
                         matches.append(
                             {
-                                "file_path": str(file.relative_to(config.root_path)).replace(
-                                    "\\", "/"
-                                ),
+                                "file_path": str(
+                                    file.relative_to(config.root_path)
+                                ).replace("\\", "/"),
                                 "line_number": match["line_number"],
                                 "line_content": match["line_content"],
                             }
