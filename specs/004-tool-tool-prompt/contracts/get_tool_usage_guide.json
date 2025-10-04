@@ -1,0 +1,294 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "get_tool_usage_guide MCP Tool Contract",
+  "description": "Contract definition for the tool usage guide generation tool",
+  "type": "object",
+  "properties": {
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "get_tool_usage_guide",
+          "description": "Tool identifier"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Human-readable tool purpose"
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "object"
+            },
+            "properties": {
+              "type": "object",
+              "properties": {
+                "tool_names": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "array"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 10
+                    },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "string"
+                        }
+                      },
+                      "required": ["type"]
+                    }
+                  },
+                  "required": ["type", "description", "items"]
+                }
+              },
+              "required": ["tool_names"]
+            },
+            "required": {
+              "type": "array",
+              "maxItems": 0,
+              "description": "tool_names is optional"
+            },
+            "additionalProperties": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "required": ["type", "properties", "required", "additionalProperties"]
+        }
+      },
+      "required": ["name", "description", "inputSchema"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "minLength": 100,
+          "maxLength": 51200,
+          "description": "Generated Markdown documentation (50KB max)",
+          "pattern": "^# Context MCP Tools Usage Guide"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^Tool '.+' not found"
+          },
+          "description": "List of invalid tool names (optional)"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "total_tools": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Total number of tools in the system"
+            },
+            "filtered_count": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of tools included in response"
+            },
+            "invalid_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tool names that were not found"
+            },
+            "generation_time_ms": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000,
+              "description": "Document generation time in milliseconds"
+            }
+          },
+          "required": ["total_tools", "filtered_count"]
+        }
+      },
+      "required": ["content", "metadata"]
+    },
+    "testScenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          },
+          "expectedOutput": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "object",
+                "properties": {
+                  "contains": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "notContains": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "filtered_count": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "warnings": {
+                "type": "object",
+                "properties": {
+                  "length": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": ["name", "input", "expectedOutput"]
+      },
+      "minItems": 5,
+      "description": "Test scenarios from acceptance criteria"
+    }
+  },
+  "required": ["tool", "response", "testScenarios"],
+  "examples": [
+    {
+      "tool": {
+        "name": "get_tool_usage_guide",
+        "description": "Returns comprehensive usage documentation for all MCP tools with optional filtering",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tool_names": {
+              "type": "array",
+              "description": "Optional list of specific tool names to include in documentation",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "response": {
+        "content": "# Context MCP Tools Usage Guide\n\n## Navigation Tools (3)\n\n### list_directory\n**Purpose**: List files and directories...",
+        "metadata": {
+          "total_tools": 11,
+          "filtered_count": 11,
+          "generation_time_ms": 8.5
+        }
+      },
+      "testScenarios": [
+        {
+          "name": "Return all tools when no filter provided",
+          "input": {},
+          "expectedOutput": {
+            "content": {
+              "contains": [
+                "## Navigation Tools",
+                "## Search Tools",
+                "## Read Tools",
+                "list_directory",
+                "search_in_files",
+                "read_entire_file"
+              ]
+            },
+            "metadata": {
+              "filtered_count": 11
+            }
+          }
+        },
+        {
+          "name": "Filter to specific tools",
+          "input": {
+            "tool_names": ["list_directory", "read_entire_file"]
+          },
+          "expectedOutput": {
+            "content": {
+              "contains": ["list_directory", "read_entire_file"],
+              "notContains": ["search_in_files"]
+            },
+            "metadata": {
+              "filtered_count": 2
+            }
+          }
+        },
+        {
+          "name": "Handle invalid tool names with warnings",
+          "input": {
+            "tool_names": ["list_directory", "nonexistent_tool", "read_entire_file"]
+          },
+          "expectedOutput": {
+            "content": {
+              "contains": ["list_directory", "read_entire_file"]
+            },
+            "metadata": {
+              "filtered_count": 2,
+              "invalid_names": ["nonexistent_tool"]
+            },
+            "warnings": {
+              "length": 1
+            }
+          }
+        },
+        {
+          "name": "Each tool includes JSON Schema",
+          "input": {
+            "tool_names": ["list_directory"]
+          },
+          "expectedOutput": {
+            "content": {
+              "contains": [
+                "```json",
+                "\"type\": \"object\"",
+                "\"properties\":",
+                "```"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Each tool includes usage examples",
+          "input": {
+            "tool_names": ["search_in_files"]
+          },
+          "expectedOutput": {
+            "content": {
+              "contains": [
+                "**Example**:",
+                "```python",
+                "search_in_files("
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
