@@ -7,20 +7,66 @@
 
 > **项目上下文集成的 MCP 服务器**
 >
-> 为 AI Agent 提供安全的只读文件系统操作，用于分析和理解项目代码库。
+> 为 AI Agent 提供安全的只读文件系统操作，用于分析和理解项目代码库，并兼容所有系统。
+>
+> 核心价值：
+>
+> - 轻量级项目检索，无需预先构建索引或部署额外服务。
+> - 多仓库/多项目上下文聚合，通过 MCP 与 Agent 工作流顺畅衔接。
 
-**快速链接**：📖 [配置指南](CONFIGURATION.md) | 🚀 [快速开始](#快速开始) | 🐛 [故障排查](CONFIGURATION.md#troubleshooting-configuration) | 🤝 [贡献指南](CONTRIBUTING.md)
+## 为什么选择 Context MCP？
+
+**核心价值**：跨项目上下文聚合 — 在分析 A 项目时，一键获取 B 服务的接口实现、依赖库的源码逻辑。
+
+### 多项目配置（一次配置，永久可用）
+
+```json
+{
+  "mcpServers": {
+    "frontend-project": {
+      "command": "uvx",
+      "args": ["context-mcp"],
+      "env": { "PROJECT_ROOT": "/path/to/frontend" }
+    },
+    "backend-api": {
+      "command": "uvx",
+      "args": ["context-mcp"],
+      "env": { "PROJECT_ROOT": "/path/to/backend" }
+    }
+  }
+}
+```
+
+### 典型场景：微服务接口调用链分析
+
+**问题**：前端调用 `POST /api/users/login` 返回 500 错误，需要排查后端实现
+
+| 步骤          | 传统方案                               | Context MCP                                   |
+| ------------- | -------------------------------------- | --------------------------------------------- |
+| 1. 定位接口   | 手动打开后端项目 → 搜索路由文件        | 一句话："分析 login 接口的实现逻辑和错误处理" |
+| 2. 追踪调用链 | 手动跟踪 routes → controller → service | Agent 自动跨项目搜索并追踪完整调用链          |
+| 3. 理解逻辑   | 逐个打开文件查看参数验证、错误码       | 自动返回：参数规则、错误码含义、调用栈        |
+| **总耗时**    | **≈10 分钟**（需切换目录、多次搜索）   | **≈30 秒**（Agent 自动化完成）                |
+
+**实际输出示例**：
+
+```
+🤖 已分析login接口完整调用链：
+   → routes/users.js:12 定义POST /api/users/login
+   → controllers/UserController.js:45 调用AuthService.login(email, password)
+   → services/AuthService.js:78 参数验证：email必填且格式正确、密码8-20位
+   → services/AuthService.js:92 错误码：401未授权、500数据库连接失败
+
+   当前500错误原因：数据库连接池配置过小，建议检查DB_POOL_SIZE环境变量
+```
+
+**价值**：将跨仓库代码追踪从"手动体力活"变为"AI 自动化"，团队协作效率提升 20 倍。
+
+---
 
 ## 快速开始
 
-### 方式一：Claude Desktop 配置
-
-**1. 编辑配置文件**
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-**2. 添加配置**（使用 uvx，无需安装）
+### MCP 配置
 
 ```json
 {
@@ -36,65 +82,76 @@
 }
 ```
 
-**3. 重启应用**
-
-重启 Claude Desktop，查看 🔌 图标确认连接成功。
-
-**4. 开始分析项目**
-
-现在 Claude 可以访问你配置的项目了：
-
-```
-👤 "列出这个项目的根目录文件，帮我了解项目结构"
-```
-
-```
-👤 "搜索项目中所有 TODO 注释，整理成待办清单"
-```
-
-### 方式二：Claude Code 配置
-
-**1. 添加 MCP 服务器**
+或者：
 
 ```bash
-claude mcp add context-mcp -- uvx context-mcp
+claude mcp add context-mcp --env PROJECT_ROOT="/absolute/path/to/your/project"  -- uvx context-mcp
 ```
 
-**2. 设置环境变量**
+> **⚠️ 注意**：`PROJECT_ROOT`变量必须配置，否则服务无法启动。
 
-编辑 `~/.claude/mcp.json` 添加：
+### 可选：安装性能优化工具
 
-```json
-{
-  "mcpServers": {
-    "context-mcp": {
-      "env": {
-        "PROJECT_ROOT": "/absolute/path/to/your/project"
-      }
-    }
-  }
-}
+Context MCP 可以利用高性能命令行工具大幅提升搜索速度（**13倍加速**），推荐安装：
+
+**ripgrep（推荐）** - 文件内容搜索加速
+
+```bash
+# macOS
+brew install ripgrep
+
+# Windows (Scoop)
+scoop install ripgrep
+
+# Ubuntu/Debian
+sudo apt install ripgrep
 ```
 
-**3. 重启 Claude Code**
+**fd（推荐）** - 文件名查找加速
 
-重启后工具会自动加载。
+```bash
+# macOS
+brew install fd
 
-**4. 开始分析项目**
+# Windows (Scoop)
+scoop install fd
 
-现在可以通过对话分析目标项目：
+# Ubuntu/Debian
+sudo apt install fd-find
+```
+
+> 💡 **提示**：这些工具是可选的。未安装时会自动降级到系统自带工具（grep/find），功能不受影响，只是速度稍慢。详细性能对比见[性能优化](#性能优化)章节。
+
+### MCP Prompt
+
+配置完成后，建议使用以下 Prompt 让 AI Agent **自主选择最合适的工具**，而非手动指定：
 
 ```
-👤 "显示这个项目的目录树，深度3层"
+请先通过 get_tool_usage_guide 了解 context-mcp 提供的所有工具及其用途。
+然后根据我的需求，自主选择最合适的工具组合来完成任务。
+
+我的需求：[在此描述你的具体需求]
 ```
 
+**这样做的优势：**
+
+- ✅ **Agent 自主决策**：由 AI 判断用哪个工具最高效
+- ✅ **工具组合优化**：自动串联多个工具完成复杂任务
+- ✅ **适应性强**：即使工具升级或新增，无需修改 Prompt
+
+**实际示例：**
+
 ```
-👤 "找出最近3天修改的文件，看看最新进展"
+👤 "请先通过 list_tools 了解 context-mcp 提供的所有工具。
+    然后帮我找出这个项目中所有调用了 deprecated API 的代码位置。"
+
+🤖 [自主分析]
+   1. 使用 search_in_files 全局搜索 "@deprecated" 注释
+   2. 使用 read_file_lines 逐一查看上下文
+   3. 生成包含文件路径和行号的完整报告
 ```
 
 ---
-
-**需要更多配置选项？** 查看 [完整配置指南](CONFIGURATION.md)
 
 ## 核心能力
 
@@ -102,9 +159,10 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
 
 > **使用场景示例**：假设你已配置 `PROJECT_ROOT=/path/to/my-web-app`，以下是实际使用方式。
 
-### 📁 导航工具（3个）
+### 📁 导航工具（3 个）
 
 - **`list_directory`** - 列出目录内容，支持排序和限制数量
+
   - **场景**：初次接触项目，想了解整体结构
   - **对话示例**：
     ```
@@ -113,6 +171,7 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
 
 - **`show_tree`** - 以树状结构展示目录层次，支持深度限制
+
   - **场景**：可视化项目架构，生成文档
   - **对话示例**：
     ```
@@ -128,9 +187,10 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     🤖 [使用 read_project_context] 发现 CLAUDE.md，包含代码风格、测试要求...
     ```
 
-### 🔍 搜索工具（4个）
+### 🔍 搜索工具（4 个）
 
 - **`search_in_file`** - 在单个文件中搜索文本或正则表达式
+
   - **场景**：已知文件，需要定位特定代码
   - **对话示例**：
     ```
@@ -139,8 +199,10 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
 
 - **`search_in_files`** - 跨多个文件递归搜索，支持正则表达式和排除模式
+
   - **场景**：代码审计、追踪 API 调用、查找技术债务
   - **对话示例**：
+
     ```
     👤 "在整个项目中搜索所有 TODO 注释，排除 node_modules"
     🤖 [使用 search_in_files] 发现15处待办事项，分布在8个文件中
@@ -150,8 +212,10 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
 
 - **`find_files_by_name`** - 按文件名查找（支持通配符）
+
   - **场景**：快速定位配置文件、测试文件
   - **对话示例**：
+
     ```
     👤 "找出这个 React 项目中所有的测试文件"
     🤖 [使用 find_files_by_name "*.test.jsx"] 找到32个测试文件
@@ -168,9 +232,10 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     🤖 [使用 find_recently_modified_files] 显示12个文件，主要集中在 auth 模块
     ```
 
-### 📖 读取工具（4个）
+### 📖 读取工具（4 个）
 
 - **`read_entire_file`** - 读取完整文件内容
+
   - **场景**：理解核心逻辑、分析配置
   - **对话示例**：
     ```
@@ -179,6 +244,7 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
 
 - **`read_file_lines`** - 读取文件的指定行范围
+
   - **场景**：精确查看函数实现
   - **对话示例**：
     ```
@@ -187,6 +253,7 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
 
 - **`read_file_tail`** - 读取文件末尾 N 行
+
   - **场景**：查看日志、检查文件最新内容
   - **对话示例**：
     ```
@@ -204,8 +271,6 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
 
 > 💡 **提示**：所有工具都经过安全加固，只支持只读操作，路径严格限制在配置的 PROJECT_ROOT 内。
 
-详细工具文档请参考 [CONFIGURATION.md](CONFIGURATION.md)。
-
 ## 性能优化
 
 Context MCP 会优先使用高性能的命令行工具,当这些工具不可用时自动降级到标准工具或 Python 实现,确保在任何环境下都能正常工作。
@@ -214,10 +279,10 @@ Context MCP 会优先使用高性能的命令行工具,当这些工具不可用�
 
 **基准测试环境**: 中型项目 (1000-10000 文件, 10MB-100MB)
 
-| 操作 | 高性能工具 | 标准工具 | Python 实现 | 加速比 |
-|------|-----------|---------|------------|--------|
+| 操作         | 高性能工具        | 标准工具    | Python 实现   | 加速比    |
+| ------------ | ----------------- | ----------- | ------------- | --------- |
 | 文件内容搜索 | **ripgrep** 180ms | grep 2400ms | Python 4200ms | **13.3x** |
-| 文件名查找 | **fd** 50ms | find 450ms | Python 680ms | **9.0x** |
+| 文件名查找   | **fd** 50ms       | find 450ms  | Python 680ms  | **9.0x**  |
 
 ### 推荐工具安装
 
@@ -226,6 +291,7 @@ Context MCP 会优先使用高性能的命令行工具,当这些工具不可用�
 #### ripgrep (rg) - 高性能搜索
 
 **Windows**:
+
 ```powershell
 # Chocolatey
 choco install ripgrep
@@ -235,6 +301,7 @@ scoop install ripgrep
 ```
 
 **Linux**:
+
 ```bash
 # Ubuntu/Debian
 sudo apt install ripgrep
@@ -244,6 +311,7 @@ sudo dnf install ripgrep
 ```
 
 **macOS**:
+
 ```bash
 brew install ripgrep
 ```
@@ -253,6 +321,7 @@ brew install ripgrep
 #### fd - 高性能文件查找
 
 **Windows**:
+
 ```powershell
 # Chocolatey
 choco install fd
@@ -262,6 +331,7 @@ scoop install fd
 ```
 
 **Linux**:
+
 ```bash
 # Ubuntu/Debian (需要 Ubuntu 19.04+ 或手动安装)
 sudo apt install fd-find
@@ -271,6 +341,7 @@ sudo dnf install fd-find
 ```
 
 **macOS**:
+
 ```bash
 brew install fd
 ```
@@ -278,14 +349,6 @@ brew install fd
 **官方下载**: https://github.com/sharkdp/fd#installation
 
 > 📝 **说明**: 这些工具是可选的。Context MCP 在没有这些工具的环境下会自动降级到系统自带的 grep/find 或 Python 实现,功能完全不受影响,只是性能会有所降低。服务启动时会在日志中显示工具检测结果。
-
-### 为什么不集成 eza?
-
-经过性能测试,我们决定 **不集成** eza 作为目录列表工具。原因:
-
-- `list_directory` 需要返回结构化数据 (文件名、大小、修改时间等)
-- 解析 eza 的文本输出会增加额外开销,反而比 Python 原生实现更慢
-- Python 的 `Path.iterdir()` 已经足够高效,无需外部工具
 
 ## 安全性
 
@@ -295,8 +358,6 @@ brew install fd
 - **权限处理**：优雅处理权限错误
 
 ## 常见问题
-
-遇到问题？查看 [完整故障排查指南](CONFIGURATION.md#troubleshooting-configuration)
 
 ## 开发指南
 
@@ -315,15 +376,11 @@ PROJECT_ROOT=$(pwd) uv run pytest
 PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp
 ```
 
-**测试覆盖率**：121 个测试（61 契约 + 28 集成 + 32 单元），覆盖率 99.2%
-
-📖 **完整开发指南**：参考 [CONTRIBUTING.md](CONTRIBUTING.md)
+**测试覆盖率**：237 个测试（232 通过 + 5 跳过），覆盖率 78%（运行 `PROJECT_ROOT=$(pwd) python -m pytest --cov=context_mcp`）
 
 ## 文档
 
 - **[README.md](README.md)** - 本文件，快速开始和概览
-- **[CONFIGURATION.md](CONFIGURATION.md)** - 详细配置和故障排查
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - 开发设置和贡献指南
 - **[SECURITY.md](SECURITY.md)** - 安全政策和漏洞报告
 - **[CHANGELOG.md](CHANGELOG.md)** - 版本历史和变更记录
 - **[LICENSE](LICENSE)** - MIT 许可证文本
@@ -331,7 +388,6 @@ PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp
 ## 系统要求
 
 - Python 3.11 或更高版本
-- （可选）ripgrep 用于加速搜索
 
 ## 开源许可
 
@@ -345,13 +401,12 @@ MIT License - 完整内容请查看 [LICENSE](LICENSE) 文件。
 欢迎贡献！🎉
 
 **快速贡献指南：**
+
 1. Fork 本仓库
 2. 创建特性分支（`git checkout -b feature/amazing-feature`）
 3. 提交你的修改并添加测试
 4. 确保所有测试通过（`PROJECT_ROOT=$(pwd) uv run pytest`）
 5. 提交 Pull Request
-
-详细指南请参考 [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 支持与社区
 
