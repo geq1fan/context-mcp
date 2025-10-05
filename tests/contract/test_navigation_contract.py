@@ -88,6 +88,66 @@ class TestListDirectoryContract:
             or "not exist" in str(exc_info.value).lower()
         )
 
+    def test_limit_zero(self):
+        """Test that limit=0 returns empty list but correct total count."""
+        result = list_directory(path=".", limit=0)
+        assert result["entries"] == []
+        assert result["total"] > 0  # Actual directory has files
+        assert result["truncated"] is True
+
+    def test_limit_one(self):
+        """Test that limit=1 returns single entry."""
+        result = list_directory(path=".", limit=1)
+        assert len(result["entries"]) == 1
+        assert result["total"] > 0
+        # truncated is True if total > 1
+        if result["total"] > 1:
+            assert result["truncated"] is True
+
+    def test_sort_by_size_order_desc(self):
+        """Test sorting by size in descending order."""
+        result = list_directory(path=".", sort_by="size", order="desc")
+        if len(result["entries"]) > 1:
+            # First entry should have size >= last entry
+            assert result["entries"][0]["size"] >= result["entries"][-1]["size"]
+
+    def test_sort_by_size_order_asc(self):
+        """Test sorting by size in ascending order."""
+        result = list_directory(path=".", sort_by="size", order="asc")
+        if len(result["entries"]) > 1:
+            # First entry should have size <= last entry
+            assert result["entries"][0]["size"] <= result["entries"][-1]["size"]
+
+    def test_sort_by_time_order_desc(self):
+        """Test sorting by time in descending order."""
+        result = list_directory(path=".", sort_by="time", order="desc")
+        if len(result["entries"]) > 1:
+            # First entry should have mtime >= last entry
+            assert result["entries"][0]["mtime"] >= result["entries"][-1]["mtime"]
+
+    def test_sort_by_time_order_asc(self):
+        """Test sorting by time in ascending order."""
+        result = list_directory(path=".", sort_by="time", order="asc")
+        if len(result["entries"]) > 1:
+            # First entry should have mtime <= last entry
+            assert result["entries"][0]["mtime"] <= result["entries"][-1]["mtime"]
+
+    def test_sort_by_name_order_desc(self):
+        """Test sorting by name in descending order."""
+        result = list_directory(path=".", sort_by="name", order="desc")
+        if len(result["entries"]) > 1:
+            # Verify descending alphabetical order
+            names = [e["name"] for e in result["entries"]]
+            assert names == sorted(names, reverse=True)
+
+    def test_sort_by_name_order_asc(self):
+        """Test sorting by name in ascending order."""
+        result = list_directory(path=".", sort_by="name", order="asc")
+        if len(result["entries"]) > 1:
+            # Verify ascending alphabetical order
+            names = [e["name"] for e in result["entries"]]
+            assert names == sorted(names)
+
 
 class TestShowTreeContract:
     """Contract tests for show_tree tool."""
@@ -168,6 +228,18 @@ class TestShowTreeContract:
             "PATH_NOT_FOUND" in str(exc_info.value)
             or "not exist" in str(exc_info.value).lower()
         )
+
+    def test_max_depth_zero_rejected(self):
+        """Test that max_depth=0 raises ValueError."""
+        with pytest.raises(ValueError) as exc_info:
+            show_tree(path=".", max_depth=0)
+        assert "must be between 1 and 10" in str(exc_info.value)
+
+    def test_max_depth_eleven_rejected(self):
+        """Test that max_depth=11 raises ValueError."""
+        with pytest.raises(ValueError) as exc_info:
+            show_tree(path=".", max_depth=11)
+        assert "must be between 1 and 10" in str(exc_info.value)
 
 
 @pytest.mark.contract
