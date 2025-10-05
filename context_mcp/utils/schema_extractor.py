@@ -3,6 +3,7 @@ Schema extraction utility for MCP tools.
 
 Extracts input schemas from FastMCP registered tools using runtime reflection.
 """
+
 from typing import Dict, Optional, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - type checking helper

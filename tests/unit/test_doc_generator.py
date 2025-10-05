@@ -1,5 +1,3 @@
-
-
 def test_generate_tool_section():
     """Test generating Markdown section for a single tool"""
     from context_mcp.utils.doc_generator import generate_tool_section
@@ -9,7 +7,7 @@ def test_generate_tool_section():
         "description": "Test description",
         "input_schema": {"type": "object", "properties": {}},
         "examples": ["test_tool(param=1)"],
-        "return_format": "Test return"
+        "return_format": "Test return",
     }
 
     section = generate_tool_section(tool_metadata)
@@ -27,7 +25,7 @@ def test_generate_category_section():
 
     tools = [
         {"name": "tool1", "description": "Desc1", "input_schema": {}, "examples": []},
-        {"name": "tool2", "description": "Desc2", "input_schema": {}, "examples": []}
+        {"name": "tool2", "description": "Desc2", "input_schema": {}, "examples": []},
     ]
 
     section = generate_category_section("Test Category", tools)
@@ -42,8 +40,22 @@ def test_render_full_document():
     from context_mcp.utils.doc_generator import render_document
 
     tools_by_category = {
-        "navigation": [{"name": "nav1", "description": "Nav tool", "input_schema": {}, "examples": []}],
-        "search": [{"name": "search1", "description": "Search tool", "input_schema": {}, "examples": []}]
+        "navigation": [
+            {
+                "name": "nav1",
+                "description": "Nav tool",
+                "input_schema": {},
+                "examples": [],
+            }
+        ],
+        "search": [
+            {
+                "name": "search1",
+                "description": "Search tool",
+                "input_schema": {},
+                "examples": [],
+            }
+        ],
     }
 
     doc = render_document(tools_by_category, total_tools=2, filtered_count=2)
@@ -60,7 +72,7 @@ def test_document_size_calculation():
     content = "Test document content"
     size = calculate_doc_size(content)
 
-    assert size == len(content.encode('utf-8'))
+    assert size == len(content.encode("utf-8"))
     assert isinstance(size, int)
 
 
@@ -73,8 +85,6 @@ def test_jinja2_template_loading():
     assert template is not None
     # Render with sample data
     result = template.render(
-        generation_date="2025-10-04",
-        tool_count=1,
-        tools_by_category={}
+        generation_date="2025-10-04", tool_count=1, tools_by_category={}
     )
     assert "Context MCP Tools Usage Guide" in result

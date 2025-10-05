@@ -10,18 +10,36 @@ async def test_all_tools_documentation():
     response = await get_tool_usage_guide(mcp)
 
     # Verify all categories present
-    assert "## Navigation Tools" in response["content"] or "## navigation Tools" in response["content"]
-    assert "## Search Tools" in response["content"] or "## search Tools" in response["content"]
-    assert "## Read Tools" in response["content"] or "## read Tools" in response["content"]
-    assert "## Guide Tools" in response["content"] or "## guide Tools" in response["content"]
+    assert (
+        "## Navigation Tools" in response["content"]
+        or "## navigation Tools" in response["content"]
+    )
+    assert (
+        "## Search Tools" in response["content"]
+        or "## search Tools" in response["content"]
+    )
+    assert (
+        "## Read Tools" in response["content"] or "## read Tools" in response["content"]
+    )
+    assert (
+        "## Guide Tools" in response["content"]
+        or "## guide Tools" in response["content"]
+    )
 
     # Verify all 12 tools mentioned
     all_tools = [
-        "list_directory", "show_tree", "read_project_context",
-        "search_in_file", "search_in_files", "find_files_by_name",
+        "list_directory",
+        "show_tree",
+        "read_project_context",
+        "search_in_file",
+        "search_in_files",
+        "find_files_by_name",
         "find_recently_modified_files",
-        "read_entire_file", "read_file_lines", "read_file_tail", "read_files",
-        "get_tool_usage_guide"
+        "read_entire_file",
+        "read_file_lines",
+        "read_file_tail",
+        "read_files",
+        "get_tool_usage_guide",
     ]
     for tool in all_tools:
         assert f"### {tool}" in response["content"]
@@ -37,7 +55,9 @@ async def test_filtered_tools():
     """Scenario: Filter to 2 specific tools"""
     from context_mcp.tools.guide import get_tool_usage_guide
 
-    response = await get_tool_usage_guide(mcp, tool_names=["list_directory", "read_entire_file"])
+    response = await get_tool_usage_guide(
+        mcp, tool_names=["list_directory", "read_entire_file"]
+    )
 
     assert "list_directory" in response["content"]
     assert "read_entire_file" in response["content"]
@@ -79,7 +99,7 @@ async def test_schema_accuracy():
     content = response["content"]
     schema_start = content.find("```json")
     schema_end = content.find("```", schema_start + 7)
-    schema_text = content[schema_start+7:schema_end].strip()
+    schema_text = content[schema_start + 7 : schema_end].strip()
 
     # Verify schema contains expected fields
     assert '"path"' in schema_text
@@ -124,6 +144,6 @@ async def test_document_size_constraint():
     from context_mcp.tools.guide import get_tool_usage_guide
 
     response = await get_tool_usage_guide(mcp)
-    size_bytes = len(response["content"].encode('utf-8'))
+    size_bytes = len(response["content"].encode("utf-8"))
 
     assert size_bytes < 50 * 1024, f"Document is {size_bytes} bytes (limit: 50KB)"

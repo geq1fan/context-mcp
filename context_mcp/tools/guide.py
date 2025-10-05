@@ -3,6 +3,7 @@ Tool usage guide generator.
 
 MCP tool that returns comprehensive documentation for all registered tools.
 """
+
 from typing import Optional, List, TYPE_CHECKING
 import time
 
@@ -96,7 +97,9 @@ def _build_tools_metadata(
                 # Get description from FastMCP tool instance
                 tool = all_tools.get(tool_name)
                 description = (
-                    tool.description if tool and tool.description else "[No description]"
+                    tool.description
+                    if tool and tool.description
+                    else "[No description]"
                 )
 
                 tool_meta = {
