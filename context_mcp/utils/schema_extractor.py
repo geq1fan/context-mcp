@@ -75,28 +75,27 @@ def categorize_tools() -> Dict[str, List[str]]:
     Categorize tools into navigation/search/read/guide groups.
 
     Returns:
-        Dict mapping category names to lists of tool names (with mcp_ prefix)
+        Dict mapping category names to lists of tool names
 
     Example:
         >>> cats = categorize_tools()
         >>> cats["navigation"]
-        ['mcp_list_directory', 'mcp_show_tree', 'mcp_read_project_context']
+        ['list_directory', 'show_tree', 'read_project_context']
     """
-    # Tool names in FastMCP have mcp_ prefix
-    navigation = ["mcp_list_directory", "mcp_show_tree", "mcp_read_project_context"]
+    navigation = ["list_directory", "show_tree", "read_project_context"]
     search = [
-        "mcp_search_in_file",
-        "mcp_search_in_files",
-        "mcp_find_files_by_name",
-        "mcp_find_recently_modified_files",
+        "search_in_file",
+        "search_in_files",
+        "find_files_by_name",
+        "find_recently_modified_files",
     ]
     read = [
-        "mcp_read_entire_file",
-        "mcp_read_file_lines",
-        "mcp_read_file_tail",
-        "mcp_read_files",
+        "read_entire_file",
+        "read_file_lines",
+        "read_file_tail",
+        "read_files",
     ]
-    guide = ["mcp_get_tool_usage_guide"]
+    guide = ["get_tool_usage_guide"]
 
     return {
         "navigation": navigation,

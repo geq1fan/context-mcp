@@ -26,9 +26,9 @@ def test_tool_registration(contract):
     # mcp.get_tools() returns Dict[str, FunctionTool]
     tools_dict = asyncio.run(mcp.get_tools())
 
-    assert "mcp_get_tool_usage_guide" in tools_dict
+    assert "get_tool_usage_guide" in tools_dict
 
-    tool = tools_dict["mcp_get_tool_usage_guide"]
+    tool = tools_dict["get_tool_usage_guide"]
 
     # Validate input schema structure (FunctionTool uses .parameters not .inputSchema)
     assert tool.parameters["type"] == "object"

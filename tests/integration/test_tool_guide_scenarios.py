@@ -147,3 +147,5 @@ async def test_document_size_constraint():
     size_bytes = len(response["content"].encode("utf-8"))
 
     assert size_bytes < 50 * 1024, f"Document is {size_bytes} bytes (limit: 50KB)"
+
+

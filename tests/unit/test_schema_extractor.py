@@ -11,9 +11,9 @@ async def test_extract_all_tool_schemas():
 
     assert isinstance(schemas, dict)
     assert len(schemas) >= 11  # At least 11 existing tools
-    assert "mcp_list_directory" in schemas
-    assert schemas["mcp_list_directory"]["type"] == "object"
-    assert "properties" in schemas["mcp_list_directory"]
+    assert "list_directory" in schemas
+    assert schemas["list_directory"]["type"] == "object"
+    assert "properties" in schemas["list_directory"]
 
 
 @pytest.mark.asyncio
@@ -21,7 +21,7 @@ async def test_extract_single_tool_schema():
     """Test extracting schema for a specific tool"""
     from context_mcp.utils.schema_extractor import extract_tool_schema
 
-    schema = await extract_tool_schema(mcp, "mcp_list_directory")
+    schema = await extract_tool_schema(mcp, "list_directory")
 
     assert schema is not None
     assert schema["type"] == "object"
@@ -50,8 +50,8 @@ def test_categorize_tools():
     assert "guide" in categories
 
     # Tool names have mcp_ prefix
-    assert "mcp_list_directory" in categories["navigation"]
-    assert "mcp_search_in_files" in categories["search"]
+    assert "list_directory" in categories["navigation"]
+    assert "search_in_files" in categories["search"]
 
 
 @pytest.mark.asyncio
@@ -59,7 +59,7 @@ async def test_get_tool_description():
     """Test getting tool description from FastMCP"""
     from context_mcp.utils.schema_extractor import get_tool_description_from_mcp
 
-    description = await get_tool_description_from_mcp(mcp, "mcp_list_directory")
+    description = await get_tool_description_from_mcp(mcp, "list_directory")
 
     assert isinstance(description, str)
     assert len(description) > 0

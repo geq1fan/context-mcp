@@ -25,8 +25,6 @@ def _validate_and_filter_tools(
     """
     Validate requested tool names and filter to valid ones.
 
-    Supports both prefixed (mcp_*) and unprefixed tool names.
-
     Args:
         tool_names: Optional list of requested tool names
         all_schemas: Dict of all available tool schemas
@@ -38,18 +36,8 @@ def _validate_and_filter_tools(
         return set(all_schemas.keys()), [], []
 
     valid_names = set(all_schemas.keys())
-
-    # Normalize tool names: add mcp_ prefix if missing
-    normalized_requested = set()
-    for name in tool_names:
-        if name in valid_names:
-            normalized_requested.add(name)
-        elif f"mcp_{name}" in valid_names:
-            normalized_requested.add(f"mcp_{name}")
-        else:
-            normalized_requested.add(name)  # Keep original for error reporting
-
-    invalid = normalized_requested - valid_names
+    requested = set(tool_names)
+    invalid = requested - valid_names
 
     warnings = []
     invalid_names = []
@@ -63,7 +51,7 @@ def _validate_and_filter_tools(
             f"not found. Available tools: {', '.join(sorted(valid_names))}"
         )
 
-    tools_to_include = normalized_requested & valid_names
+    tools_to_include = requested & valid_names
     return tools_to_include, warnings, invalid_names
 
 
@@ -91,9 +79,6 @@ def _build_tools_metadata(
         category_tools = []
         for tool_name in tool_list:
             if tool_name in tools_to_include:
-                # Remove mcp_ prefix for user-friendly display
-                display_name = tool_name.removeprefix("mcp_")
-
                 # Get description from FastMCP tool instance
                 tool = all_tools.get(tool_name)
                 description = (
@@ -103,7 +88,7 @@ def _build_tools_metadata(
                 )
 
                 tool_meta = {
-                    "name": display_name,
+                    "name": tool_name,
                     "description": description,
                     "input_schema": all_schemas[tool_name],
                     "examples": [],  # Examples can be added later if needed

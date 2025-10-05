@@ -53,7 +53,7 @@ else:
 
 
 @mcp.tool()
-def mcp_list_directory(
+def list_directory(
     path: str = ".", sort_by: str = "name", order: str = "asc", limit: int = -1
 ) -> dict:
     """List directory contents with sorting and limiting.
@@ -68,8 +68,9 @@ def mcp_list_directory(
         dict: entries (list), total (int), truncated (bool)
     """
     from typing import cast, Literal
+    from context_mcp.tools.navigation import list_directory as list_dir_impl
 
-    return list_directory(
+    return list_dir_impl(
         path,
         cast(Literal["name", "size", "time"], sort_by),
         cast(Literal["asc", "desc"], order),
@@ -78,7 +79,7 @@ def mcp_list_directory(
 
 
 @mcp.tool()
-def mcp_show_tree(path: str = ".", max_depth: int = 3) -> dict:
+def show_tree(path: str = ".", max_depth: int = 3) -> dict:
     """Show directory tree structure.
 
     Args:
@@ -88,11 +89,12 @@ def mcp_show_tree(path: str = ".", max_depth: int = 3) -> dict:
     Returns:
         dict: tree (TreeNode), max_depth_reached (bool)
     """
-    return show_tree(path, max_depth)
+    from context_mcp.tools.navigation import show_tree as show_tree_impl
+    return show_tree_impl(path, max_depth)
 
 
 @mcp.tool()
-def mcp_read_project_context() -> dict:
+def read_project_context() -> dict:
     """Read project context files (AGENTS.md, CLAUDE.md) from PROJECT_ROOT.
 
     Discovers and reads AI agent context files to understand project-specific
@@ -108,7 +110,8 @@ def mcp_read_project_context() -> dict:
     Raises:
         RuntimeError: If PROJECT_ROOT is not set or invalid
     """
-    return read_project_context()
+    from context_mcp.tools.navigation import read_project_context as read_ctx_impl
+    return read_ctx_impl()
 
 
 # ============================================================================
@@ -117,7 +120,7 @@ def mcp_read_project_context() -> dict:
 
 
 @mcp.tool()
-def mcp_search_in_file(query: str, file_path: str, use_regex: bool = False) -> dict:
+def search_in_file(query: str, file_path: str, use_regex: bool = False) -> dict:
     """Search for text in a single file.
 
     Args:
@@ -128,11 +131,12 @@ def mcp_search_in_file(query: str, file_path: str, use_regex: bool = False) -> d
     Returns:
         dict: matches (list), total_matches (int)
     """
-    return search_in_file(query, file_path, use_regex)
+    from context_mcp.tools.search import search_in_file as search_file_impl
+    return search_file_impl(query, file_path, use_regex)
 
 
 @mcp.tool()
-def mcp_search_in_files(
+def search_in_files(
     query: str,
     file_pattern: str = "*",
     path: str = ".",
@@ -153,11 +157,12 @@ def mcp_search_in_files(
     Returns:
         dict: matches (list), total_matches (int), files_searched (int), timed_out (bool)
     """
-    return search_in_files(query, file_pattern, path, use_regex, exclude_query, timeout)
+    from context_mcp.tools.search import search_in_files as search_files_impl
+    return search_files_impl(query, file_pattern, path, use_regex, exclude_query, timeout)
 
 
 @mcp.tool()
-def mcp_find_files_by_name(name_pattern: str, path: str = ".") -> dict:
+def find_files_by_name(name_pattern: str, path: str = ".") -> dict:
     """Find files by name pattern (glob).
 
     Args:
@@ -167,11 +172,12 @@ def mcp_find_files_by_name(name_pattern: str, path: str = ".") -> dict:
     Returns:
         dict: files (list[str]), total_found (int)
     """
-    return find_files_by_name(name_pattern, path)
+    from context_mcp.tools.search import find_files_by_name as find_files_impl
+    return find_files_impl(name_pattern, path)
 
 
 @mcp.tool()
-def mcp_find_recently_modified_files(
+def find_recently_modified_files(
     hours_ago: int, path: str = ".", file_pattern: str = "*"
 ) -> dict:
     """Find files modified within the last N hours.
@@ -184,7 +190,8 @@ def mcp_find_recently_modified_files(
     Returns:
         dict: files (list[dict]), total_found (int)
     """
-    return find_recently_modified_files(hours_ago, path, file_pattern)
+    from context_mcp.tools.search import find_recently_modified_files as find_recent_impl
+    return find_recent_impl(hours_ago, path, file_pattern)
 
 
 # ============================================================================
@@ -193,7 +200,7 @@ def mcp_find_recently_modified_files(
 
 
 @mcp.tool()
-def mcp_read_entire_file(file_path: str) -> dict:
+def read_entire_file(file_path: str) -> dict:
     """Read complete file content.
 
     Args:
@@ -202,11 +209,12 @@ def mcp_read_entire_file(file_path: str) -> dict:
     Returns:
         dict: content, encoding, line_count, file_path
     """
-    return read_entire_file(file_path)
+    from context_mcp.tools.read import read_entire_file as read_file_impl
+    return read_file_impl(file_path)
 
 
 @mcp.tool()
-def mcp_read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
+def read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
     """Read specific line range from file.
 
     Args:
@@ -217,11 +225,12 @@ def mcp_read_file_lines(file_path: str, start_line: int, end_line: int) -> dict:
     Returns:
         dict: content, encoding, line_count, file_path, is_partial, total_lines
     """
-    return read_file_lines(file_path, start_line, end_line)
+    from context_mcp.tools.read import read_file_lines as read_lines_impl
+    return read_lines_impl(file_path, start_line, end_line)
 
 
 @mcp.tool()
-def mcp_read_file_tail(file_path: str, num_lines: int = 10) -> dict:
+def read_file_tail(file_path: str, num_lines: int = 10) -> dict:
     """Read last N lines of file.
 
     Args:
@@ -231,11 +240,12 @@ def mcp_read_file_tail(file_path: str, num_lines: int = 10) -> dict:
     Returns:
         dict: content, encoding, line_count, file_path, is_partial, total_lines
     """
-    return read_file_tail(file_path, num_lines)
+    from context_mcp.tools.read import read_file_tail as read_tail_impl
+    return read_tail_impl(file_path, num_lines)
 
 
 @mcp.tool()
-def mcp_read_files(file_paths: list[str]) -> dict:
+def read_files(file_paths: list[str]) -> dict:
     """Batch read multiple files.
 
     Args:
@@ -244,7 +254,8 @@ def mcp_read_files(file_paths: list[str]) -> dict:
     Returns:
         dict: files (list), success_count (int), error_count (int)
     """
-    return read_files(file_paths)
+    from context_mcp.tools.read import read_files as read_files_impl
+    return read_files_impl(file_paths)
 
 
 # ============================================================================
@@ -253,7 +264,7 @@ def mcp_read_files(file_paths: list[str]) -> dict:
 
 
 @mcp.tool()
-async def mcp_get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
+async def get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
     """Returns comprehensive usage documentation for MCP tools.
 
     Generates Markdown documentation with JSON Schema definitions, descriptions,

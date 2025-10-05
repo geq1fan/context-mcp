@@ -9,7 +9,20 @@
       "mcp__fetch__fetch",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:github.com)",
-      "mcp__github__get_pull_request"
+      "mcp__github__get_pull_request",
+      "Read(//c/Users/Ge/**)",
+      "mcp__context-mcp__mcp_list_directory",
+      "mcp__context-mcp__mcp_show_tree",
+      "mcp__context-mcp__mcp_read_project_context",
+      "mcp__context-mcp__mcp_search_in_file",
+      "mcp__context-mcp__mcp_search_in_files",
+      "mcp__context-mcp__mcp_find_files_by_name",
+      "mcp__context-mcp__mcp_find_recently_modified_files",
+      "mcp__context-mcp__mcp_read_entire_file",
+      "mcp__context-mcp__mcp_read_file_lines",
+      "mcp__context-mcp__mcp_read_file_tail",
+      "mcp__context-mcp__mcp_read_files",
+      "mcp__code-reasoning__code-reasoning"
     ],
     "deny": [],
     "ask": []

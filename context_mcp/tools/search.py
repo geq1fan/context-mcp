@@ -125,9 +125,8 @@ def search_in_files(
     rg_cmd = shutil.which("rg")
     if rg_cmd:
         cmd = [rg_cmd, "--line-number", "--no-heading"]
-        if use_regex:
-            cmd.append("--regexp")
-        else:
+        # ripgrep defaults to regex mode, only add -F for literal search
+        if not use_regex:
             cmd.append("--fixed-strings")
 
         if file_pattern != "*":
@@ -176,21 +175,12 @@ def search_in_files(
 
                 try:
                     file_path = Path(file_str)
+                    # ripgrep with cwd=root_path returns paths relative to root_path
                     if not file_path.is_absolute():
-                        normalized_parts = tuple(
-                            part for part in file_path.parts if part not in (".",)
-                        )
-                        # Avoid duplicating the search root when ripgrep already returned a project-relative path
-                        if (
-                            search_root_parts
-                            and normalized_parts[: len(search_root_parts)]
-                            == search_root_parts
-                        ):
-                            file_path = (config.root_path / file_path).resolve()
-                        else:
-                            file_path = (abs_path / file_path).resolve()
+                        file_path = (config.root_path / file_path).resolve()
                     else:
                         file_path = file_path.resolve()
+
                     file_rel = file_path.relative_to(config.root_path)
 
                     matches.append(
@@ -200,8 +190,9 @@ def search_in_files(
                             "line_content": line_content,
                         }
                     )
-                except (ValueError, IndexError):
+                except (ValueError, IndexError) as e:
                     # Skip malformed lines or paths outside root
+                    logger.info(f"Skip line due to {type(e).__name__}: {line[:100]}")
                     continue
 
         except subprocess.TimeoutExpired:
@@ -357,7 +348,7 @@ def find_files_by_name(name_pattern: str, path: str = ".") -> dict:
     # Try fd first if available
     if _tool_detector.has_fd:
         try:
-            cmd = ["fd", "--type", "f", name_pattern, str(abs_path)]
+            cmd = ["fd", "--type", "f", "--glob", name_pattern, str(abs_path)]
 
             result = subprocess.run(
                 cmd,
@@ -457,20 +448,75 @@ def find_recently_modified_files(
     # Calculate cutoff time
     cutoff_time = time.time() - (hours_ago * 3600)
 
-    # Find recently modified files
     files = []
+
+    # Try fd first (respects .gitignore automatically)
+    if _tool_detector.has_fd:
+        try:
+            cmd = [
+                "fd",
+                "--type", "f",
+                "--changed-within", f"{hours_ago}h",
+                "--glob", file_pattern,
+                str(abs_path)
+            ]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                cwd=str(config.root_path),
+                encoding="utf-8",
+                errors="replace",
+            )
+
+            if result.returncode == 0:
+                for line in result.stdout.splitlines():
+                    if not line.strip():
+                        continue
+
+                    try:
+                        file_path = Path(line.strip())
+                        if not file_path.is_absolute():
+                            file_path = (abs_path / file_path).resolve()
+
+                        file_rel = file_path.relative_to(config.root_path)
+                        mtime = file_path.stat().st_mtime
+
+                        files.append(
+                            {
+                                "path": str(file_rel).replace("\\", "/"),
+                                "mtime": mtime,
+                            }
+                        )
+                    except (ValueError, OSError):
+                        continue
+
+                # Sort by modification time (most recent first)
+                from typing import cast
+                files.sort(key=lambda f: cast(float, f["mtime"]), reverse=True)
+                return {"files": files, "total_found": len(files)}
+
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            # Fall through to Python fallback
+            pass
+
     for file in abs_path.rglob(file_pattern):
         if file.is_file():
             try:
+                # Get path relative to root for exclusion check
+                file_rel = file.relative_to(config.root_path)
+
                 mtime = file.stat().st_mtime
                 if mtime >= cutoff_time:
                     files.append(
                         {
-                            "path": str(file.relative_to(config.root_path)),
+                            "path": str(file_rel).replace("\\", "/"),
                             "mtime": mtime,
                         }
                     )
-            except (OSError, PermissionError):
+            except (OSError, PermissionError, ValueError):
                 continue
 
     # Sort by modification time (most recent first)
