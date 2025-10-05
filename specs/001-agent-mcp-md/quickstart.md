@@ -229,7 +229,6 @@ INFO: Listening for MCP requests...
     ...
   ],
   "total_matches": 15,
-  "files_searched": 5,
   "timed_out": false
 }
 ```
@@ -509,7 +508,6 @@ INFO: Listening for MCP requests...
 {
   "matches": [...],
   "total_matches": 1234,
-  "files_searched": 50,
   "timed_out": true
 }
 ```
@@ -559,7 +557,6 @@ INFO: Listening for MCP requests...
 {
   "matches": [],
   "total_matches": 0,
-  "files_searched": 100,
   "timed_out": false
 }
 ```

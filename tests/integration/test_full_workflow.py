@@ -64,8 +64,8 @@ class TestSearchWorkflow:
         result = search_in_files(
             query="import", file_pattern="*.py", path="context_mcp"
         )
-        assert result["files_searched"] >= 0
         assert isinstance(result["timed_out"], bool)
+        assert isinstance(result["total_matches"], int)
 
     def test_find_files_by_name_pattern(self):
         """Test finding files by name pattern."""

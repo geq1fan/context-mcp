@@ -94,7 +94,7 @@ def search_in_files(
         timeout: Timeout in seconds
 
     Returns:
-        dict with keys: matches (list), total_matches (int), files_searched (int), timed_out (bool)
+        dict with keys: matches (list), total_matches (int), timed_out (bool)
     """
     if config is None or validator is None:
         raise RuntimeError("Configuration not loaded")
@@ -109,7 +109,6 @@ def search_in_files(
 
     # Use ripgrep if available, otherwise grep
     matches = []
-    files_searched = 0
     timed_out = False
     start_time = time.time()
 
@@ -295,7 +294,6 @@ def search_in_files(
 
             if file.is_file():
                 try:
-                    files_searched += 1
                     file_result = search_in_file(
                         query, str(file.relative_to(config.root_path)), use_regex
                     )
@@ -317,7 +315,6 @@ def search_in_files(
     return {
         "matches": matches,
         "total_matches": len(matches),
-        "files_searched": files_searched,
         "timed_out": timed_out,
     }
 

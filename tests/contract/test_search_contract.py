@@ -273,6 +273,7 @@ class TestFindFilesByNameContract:
 
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.search.config", mock_config)
         monkeypatch.setattr(
             "context_mcp.tools.search.validator", PathValidator(tmp_path)
         )
@@ -297,6 +298,7 @@ class TestFindFilesByNameContract:
 
         mock_config = ProjectConfig(root_path=tmp_path)
         monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.search.config", mock_config)
         monkeypatch.setattr(
             "context_mcp.tools.search.validator", PathValidator(tmp_path)
         )

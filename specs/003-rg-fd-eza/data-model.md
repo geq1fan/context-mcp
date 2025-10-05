@@ -91,10 +91,10 @@ grep_args = [RG_TO_GREP_PARAMS.get(arg, arg) for arg in rg_args]
 |--------|------|------|
 | `matches` | list[dict] | 匹配结果列表,每项包含file_path/line_number/line_content |
 | `total_matches` | int | 总匹配数 |
-| `files_searched` | int | 搜索的文件数 (仅Python降级时填充) |
 | `timed_out` | bool | 是否超时 |
 
 **约束**: 无论使用ripgrep/grep/Python,返回格式必须一致 (FR-004要求)
+**Breaking Change**: 移除`files_searched`字段,因ripgrep/grep无法准确统计此值,保持一致性
 
 ---
 

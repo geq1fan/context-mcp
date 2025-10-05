@@ -120,10 +120,9 @@
             }
           },
           "total_matches": {"type": "integer"},
-          "files_searched": {"type": "integer"},
           "timed_out": {"type": "boolean"}
         },
-        "required": ["matches", "total_matches", "files_searched", "timed_out"]
+        "required": ["matches", "total_matches", "timed_out"]
       },
       "errors": [
         {
