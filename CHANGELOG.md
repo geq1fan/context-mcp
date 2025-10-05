@@ -7,16 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-10-05
+
 ### Added
-- New MCP tool `read_project_context` to discover and read AI agent context files (AGENTS.md and CLAUDE.md)
-- Support for project-specific agent instructions with priority ordering (AGENTS.md first, then CLAUDE.md)
-- Comprehensive error handling for missing files, permission errors, and encoding issues in context file reading
-- Warning logging for large context files (>1MB) to improve performance awareness
+- **New MCP Tool**: `get_tool_usage_guide` for dynamic documentation generation
+  - Returns comprehensive usage documentation for all MCP tools
+  - Supports optional filtering by tool names
+  - Includes JSON Schema definitions, descriptions, and usage examples
+  - Performance optimized (<100ms generation time)
+  - Template-based rendering using Jinja2
+- Development dependencies: `pytest-asyncio`, `ruff`, `mypy` for improved code quality
+- Complete async/await support across all new tool implementations
 
 ### Changed
-- Package renamed to `context-mcp` (PyPI package name `agent-mcp` was unavailable)
-- Executable script is now `context-mcp`
-- All documentation and configuration updated to use `uvx context-mcp`
+- Updated dependency management from deprecated `tool.uv.dev-dependencies` to `dependency-groups.dev`
+- Improved type annotations with full mypy compliance
+- Enhanced code formatting with ruff auto-formatting
+
+### Technical Improvements
+- **Architecture**: Clean dependency injection pattern to avoid circular imports
+  - `schema_extractor.py`: Runtime schema extraction from FastMCP
+  - `doc_generator.py`: Markdown rendering via Jinja2 templates
+  - `guide.py`: Orchestrates documentation generation
+- **No data duplication**: Uses FastMCP's `tool.description` directly
+- **Full test coverage**: 193 tests passing (contract/integration/unit)
+- **Quality gates**: All ruff checks, mypy type checking, and pytest tests passing
+
+### Fixed
+- Resolved circular dependency issues in schema extraction
+- Fixed async function signatures across test files
+- Corrected mypy type checking errors with proper type annotations
 
 ## [0.1.0] - 2025-10-03
 
@@ -139,4 +159,21 @@ First public release of Context MCP, providing AI agents with secure, read-only 
 
 **Contributors**: Context MCP Team
 
+### v0.2.0 - Tool Documentation Generator
+
+**Highlights**:
+- ✅ New `get_tool_usage_guide` MCP tool for self-documenting APIs
+- ✅ 193 tests passing with full async support
+- ✅ Complete type safety with mypy compliance
+- ✅ Clean architecture with dependency injection
+- ✅ Production-ready code quality (ruff + mypy)
+
+**What's New**:
+The 0.2.0 release adds powerful self-documentation capabilities to Context MCP. The new `get_tool_usage_guide` tool dynamically generates comprehensive documentation from FastMCP runtime metadata, making it easy for AI agents to discover and understand available tools.
+
+**Breaking Changes**: None
+
+**Contributors**: Context MCP Team
+
+[0.2.0]: https://github.com/geq1fan/context-mcp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/geq1fan/context-mcp/releases/tag/v0.1.0

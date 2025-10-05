@@ -1,6 +1,6 @@
 [project]
 name = "context-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server for project context integration - provides read-only filesystem operations for AI agents"
 authors = [
     {name = "Context MCP Team", email = "context-mcp@example.com"}
