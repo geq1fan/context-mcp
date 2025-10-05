@@ -4,7 +4,7 @@ Tool usage guide generator.
 MCP tool that returns comprehensive documentation for all registered tools.
 """
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING, Any, Dict
 import time
 
 from context_mcp.utils.schema_extractor import (
@@ -71,7 +71,7 @@ def _build_tools_metadata(
     tools_to_include: set,
     categories: dict,
     all_schemas: dict,
-    all_tools: dict["str", "FunctionTool"],
+    all_tools: Dict[str, Any],
 ) -> dict:
     """
     Build tool metadata organized by category.
@@ -180,7 +180,7 @@ async def get_tool_usage_guide(
     generation_time_ms = (time.time() - start_time) * 1000
     doc_size = calculate_doc_size(content)
 
-    response = {
+    response: Dict[str, Any] = {
         "content": content,
         "metadata": {
             "total_tools": len(all_schemas),

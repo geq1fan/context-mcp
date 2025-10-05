@@ -4,14 +4,14 @@ Schema extraction utility for MCP tools.
 Extracts input schemas from FastMCP registered tools using runtime reflection.
 """
 
-from typing import Dict, Optional, List, TYPE_CHECKING
+from typing import Dict, Optional, List, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover - type checking helper
     from fastmcp.tools.tool import FunctionTool
     from fastmcp import FastMCP
 
 
-async def get_registered_tools(mcp_instance: "FastMCP") -> Dict[str, "FunctionTool"]:
+async def get_registered_tools(mcp_instance: "FastMCP") -> Dict[str, Any]:
     """
     Return the currently registered FastMCP tools keyed by name.
 
@@ -26,7 +26,7 @@ async def get_registered_tools(mcp_instance: "FastMCP") -> Dict[str, "FunctionTo
 
 async def extract_tool_schemas(
     mcp_instance: "FastMCP",
-    tools: Optional[Dict[str, "FunctionTool"]] = None,
+    tools: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, dict]:
     """
     Extract input schemas for all registered MCP tools.
@@ -52,7 +52,7 @@ async def extract_tool_schemas(
 async def extract_tool_schema(
     mcp_instance: "FastMCP",
     tool_name: str,
-    tools: Optional[Dict[str, "FunctionTool"]] = None,
+    tools: Optional[Dict[str, Any]] = None,
 ) -> Optional[dict]:
     """
     Extract schema for a single tool.
@@ -109,7 +109,7 @@ def categorize_tools() -> Dict[str, List[str]]:
 async def get_tool_description_from_mcp(
     mcp_instance: "FastMCP",
     tool_name: str,
-    tools: Optional[Dict[str, "FunctionTool"]] = None,
+    tools: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Get tool description from FastMCP metadata.
