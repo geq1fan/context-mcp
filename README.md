@@ -92,7 +92,7 @@ claude mcp add context-mcp --env PROJECT_ROOT="/absolute/path/to/your/project"  
 
 ### 可选：安装性能优化工具
 
-Context MCP 可以利用高性能命令行工具大幅提升搜索速度（**13倍加速**），推荐安装：
+Context MCP 可以利用高性能命令行工具大幅提升搜索速度（**13 倍加速**），推荐安装：
 
 **ripgrep（推荐）** - 文件内容搜索加速
 
@@ -138,18 +138,6 @@ sudo apt install fd-find
 - ✅ **Agent 自主决策**：由 AI 判断用哪个工具最高效
 - ✅ **工具组合优化**：自动串联多个工具完成复杂任务
 - ✅ **适应性强**：即使工具升级或新增，无需修改 Prompt
-
-**实际示例：**
-
-```
-👤 "请先通过 list_tools 了解 context-mcp 提供的所有工具。
-    然后帮我找出这个项目中所有调用了 deprecated API 的代码位置。"
-
-🤖 [自主分析]
-   1. 使用 search_in_files 全局搜索 "@deprecated" 注释
-   2. 使用 read_file_lines 逐一查看上下文
-   3. 生成包含文件路径和行号的完整报告
-```
 
 ---
 
