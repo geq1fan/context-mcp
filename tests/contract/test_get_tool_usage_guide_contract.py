@@ -1,5 +1,4 @@
 import pytest
-from jsonschema import validate, ValidationError
 import json
 from pathlib import Path
 import asyncio

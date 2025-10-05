@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import Mock, patch
 from context_mcp.server import mcp
 
 

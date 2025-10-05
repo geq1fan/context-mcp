@@ -1,5 +1,3 @@
-import pytest
-from unittest.mock import Mock
 
 
 def test_generate_tool_section():
