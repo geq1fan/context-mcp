@@ -51,7 +51,6 @@ class TestSearchOutputConsistency:
         assert isinstance(result, dict)
         assert "matches" in result
         assert "total_matches" in result
-        assert "files_searched" in result
         assert "timed_out" in result
 
         # Verify matches structure

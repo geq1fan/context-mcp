@@ -155,7 +155,7 @@ def search_in_files(
         timeout: Timeout in seconds (default: 60)
 
     Returns:
-        dict: matches (list), total_matches (int), files_searched (int), timed_out (bool)
+        dict: matches (list), total_matches (int), timed_out (bool)
     """
     from context_mcp.tools.search import search_in_files as search_files_impl
     return search_files_impl(query, file_pattern, path, use_regex, exclude_query, timeout)

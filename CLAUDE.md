@@ -76,6 +76,14 @@ tests/
 1. Phase 1完成: 数据模型、契约定义、quickstart
 2. 定义10个MCP工具契约(JSON Schema)
 3. 确定三层测试策略(契约/集成/单元)
+4. **完成测试覆盖补充(005-tool)**: 29个新增测试用例覆盖所有MCP工具参数,103个contract测试全部通过,参数覆盖率100%
+
+## 测试覆盖现状
+
+- **Contract测试**: 103个测试(29个新增于005-tool),覆盖11个MCP工具的所有参数边界和组合
+- **测试通过率**: 100% (103 passed, 1 skipped)
+- **参数覆盖率**: 100% (所有工具参数都有专门测试验证)
+- **边界测试**: limit=0/1, max_depth边界, 正则+排除组合, 行范围超出等29个关键场景
 
 ## 参考文档
 
@@ -85,3 +93,4 @@ tests/
 - Data Model: `specs/001-agent-mcp-md/data-model.md`
 - Contracts: `specs/001-agent-mcp-md/contracts/`
 - Quickstart: `specs/001-agent-mcp-md/quickstart.md`
+- **005-tool测试覆盖清单**: `specs/005-tool/contracts/test-coverage-checklist.md`

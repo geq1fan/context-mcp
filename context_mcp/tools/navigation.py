@@ -87,7 +87,11 @@ def list_directory(
     # Apply limit
     total = len(entries)
     truncated = False
-    if limit > 0 and len(entries) > limit:
+    if limit == 0:
+        # limit=0 returns empty list but preserves total count
+        entries = []
+        truncated = True
+    elif limit > 0 and len(entries) > limit:
         entries = entries[:limit]
         truncated = True
 

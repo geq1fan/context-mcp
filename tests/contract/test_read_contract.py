@@ -107,6 +107,61 @@ class TestReadFileLinesContract:
             or "not exist" in str(exc_info.value).lower()
         )
 
+    def test_single_line_read(self, tmp_path, monkeypatch):
+        """Test reading single line when start_line=end_line."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("line1\nline2\nline3\n", encoding="utf-8")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        result = read_file_lines(file_path="test.txt", start_line=2, end_line=2)
+        assert result["line_count"] == 1
+        assert result["is_partial"] is True
+        assert result["total_lines"] == 3
+        assert "line2" in result["content"]
+
+    def test_end_line_exceeds_total(self, tmp_path, monkeypatch):
+        """Test end_line > total_lines automatically truncates."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("line1\nline2\nline3\nline4\nline5\n", encoding="utf-8")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        result = read_file_lines(file_path="test.txt", start_line=3, end_line=10)
+        # Should return lines 3-5 only
+        assert result["line_count"] == 3
+        assert result["total_lines"] == 5
+        assert "line3" in result["content"]
+        assert "line5" in result["content"]
+
+    def test_read_entire_file_via_lines(self, tmp_path, monkeypatch):
+        """Test reading entire file via start_line=1, end_line=total_lines."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+
+        test_file = tmp_path / "test.txt"
+        content = "".join(f"line{i}\n" for i in range(1, 11))
+        test_file.write_text(content, encoding="utf-8")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        result = read_file_lines(file_path="test.txt", start_line=1, end_line=10)
+        assert result["line_count"] == 10
+        assert result["is_partial"] is True
+        assert result["total_lines"] == 10
+
 
 class TestReadFileTailContract:
     """Contract tests for read_file_tail tool."""
@@ -162,6 +217,44 @@ class TestReadFileTailContract:
             "FILE_NOT_FOUND" in str(exc_info.value)
             or "not exist" in str(exc_info.value).lower()
         )
+
+    def test_num_lines_exceeds_total(self, tmp_path, monkeypatch):
+        """Test num_lines > total_lines returns entire file."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("line1\nline2\nline3\nline4\nline5\n", encoding="utf-8")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        result = read_file_tail(file_path="test.txt", num_lines=10)
+        # Should return all 5 lines
+        assert result["line_count"] == 5
+        assert result["is_partial"] is False
+        assert result["total_lines"] == 5
+
+    def test_num_lines_equals_total(self, tmp_path, monkeypatch):
+        """Test num_lines = total_lines boundary."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+
+        test_file = tmp_path / "test.txt"
+        test_file.write_text(
+            "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\n", encoding="utf-8"
+        )
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        result = read_file_tail(file_path="test.txt", num_lines=8)
+        # Should return all 8 lines
+        assert result["line_count"] == 8
+        assert result["is_partial"] is False
+        assert result["total_lines"] == 8
 
 
 class TestReadFilesContract:
@@ -239,3 +332,43 @@ class TestReadFilesContract:
         result = read_files(file_paths=["README.md", "nonexistent.txt"])
         assert result["success_count"] >= 1
         assert result["error_count"] >= 1
+
+    def test_empty_array_rejected(self):
+        """Test that file_paths=[] violates minItems constraint."""
+        # Empty array should either raise exception or return 0 counts
+        try:
+            result = read_files(file_paths=[])
+            # If no exception, verify empty result
+            assert result["success_count"] == 0
+            assert result["error_count"] == 0
+            assert len(result["files"]) == 0
+        except Exception as exc_info:
+            # Acceptable: some implementations may reject empty array
+            assert "empty" in str(exc_info).lower() or "minItems" in str(exc_info)
+
+    def test_large_batch(self, tmp_path, monkeypatch):
+        """Test reading 100 files in batch (performance test)."""
+        from context_mcp.config import ProjectConfig
+        from context_mcp.validators.path_validator import PathValidator
+        import time
+
+        # Create 100 small test files
+        file_paths = []
+        for i in range(100):
+            test_file = tmp_path / f"test{i}.txt"
+            test_file.write_text(f"content{i}\n", encoding="utf-8")
+            file_paths.append(f"test{i}.txt")
+
+        mock_config = ProjectConfig(root_path=tmp_path)
+        monkeypatch.setattr("context_mcp.config.config", mock_config)
+        monkeypatch.setattr("context_mcp.tools.read.validator", PathValidator(tmp_path))
+
+        start_time = time.time()
+        result = read_files(file_paths=file_paths)
+        elapsed = time.time() - start_time
+
+        # Verify all files read successfully
+        assert result["success_count"] == 100
+        assert result["error_count"] == 0
+        # Performance: should complete in <5 seconds
+        assert elapsed < 5.0, f"Batch read took {elapsed:.2f}s, expected <5s"

@@ -35,7 +35,6 @@
     }
   ],
   "total_matches": 1,
-  "files_searched": 10,
   "timed_out": false
 }
 ```
