@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2025-10-28
+
+### Fixed
+- **Import Bug**: Fixed missing `logging` import in server.py causing `NameError` on startup
+  - Added missing `import logging` statement
+
 ## [0.2.5] - 2025-10-28
 
 ### Fixed

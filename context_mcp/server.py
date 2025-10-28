@@ -3,6 +3,7 @@
 Registers all 11 MCP tools and starts the server.
 """
 
+import logging
 from fastmcp import FastMCP
 from context_mcp.config import load_config
 from context_mcp.utils.logger import setup_logging, logger
