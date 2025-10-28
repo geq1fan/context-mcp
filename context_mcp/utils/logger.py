@@ -9,13 +9,13 @@ from pathlib import Path
 
 
 def setup_logging(
-    log_file: str = "context_mcp.log", level: int = logging.INFO
+    log_file: str = "context_mcp.log", level: int = logging.WARNING
 ) -> logging.Logger:
     """Configure logging with timed rotation.
 
     Args:
         log_file: Log file name (default: context_mcp.log)
-        level: Logging level (default: INFO)
+        level: Logging level (default: WARNING)
 
     Returns:
         Configured logger instance

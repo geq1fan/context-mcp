@@ -2,6 +2,7 @@
 
 import pytest
 import os
+import logging
 from context_mcp.config import ProjectConfig, load_config
 
 
@@ -11,12 +12,13 @@ class TestProjectConfig:
     def test_valid_config_creation(self, tmp_path):
         """Test creating valid ProjectConfig."""
         config = ProjectConfig(
-            root_path=tmp_path, search_timeout=30, log_retention_days=5
+            root_path=tmp_path, search_timeout=30, log_retention_days=5, log_level=logging.DEBUG
         )
 
         assert config.root_path == tmp_path
         assert config.search_timeout == 30
         assert config.log_retention_days == 5
+        assert config.log_level == logging.DEBUG
 
     def test_config_with_defaults(self, tmp_path):
         """Test that defaults are applied correctly."""
@@ -24,6 +26,7 @@ class TestProjectConfig:
 
         assert config.search_timeout == 60
         assert config.log_retention_days == 7
+        assert config.log_level == logging.WARNING
 
     def test_config_is_frozen(self, tmp_path):
         """Test that ProjectConfig is immutable (frozen=True)."""
@@ -72,6 +75,15 @@ class TestProjectConfig:
 
         assert ">= 1" in str(exc_info.value)
 
+    def test_validation_fails_for_invalid_log_level(self, tmp_path):
+        """Test that validation fails for invalid log level."""
+        with pytest.raises(ValueError) as exc_info:
+            ProjectConfig(root_path=tmp_path, log_level=999)
+
+        assert "log_level must be one of" in str(exc_info.value)
+        assert "DEBUG" in str(exc_info.value)
+        assert "WARNING" in str(exc_info.value)
+
 
 class TestLoadConfig:
     """Unit tests for load_config() function."""
@@ -80,20 +92,24 @@ class TestLoadConfig:
         """Test loading config from environment variables."""
         monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
         monkeypatch.setenv("SEARCH_TIMEOUT", "30")
+        monkeypatch.setenv("LOG_LEVEL", "DEBUG")
 
         config = load_config()
 
         assert config.root_path == tmp_path
         assert config.search_timeout == 30
+        assert config.log_level == logging.DEBUG
 
     def test_load_config_with_default_timeout(self, tmp_path, monkeypatch):
         """Test that SEARCH_TIMEOUT defaults to 60."""
         monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
         monkeypatch.delenv("SEARCH_TIMEOUT", raising=False)
+        monkeypatch.delenv("LOG_LEVEL", raising=False)
 
         config = load_config()
 
         assert config.search_timeout == 60
+        assert config.log_level == logging.WARNING  # Default log level
 
     def test_load_config_fails_without_project_root(self, monkeypatch):
         """Test that load_config fails if PROJECT_ROOT is not set."""
@@ -144,3 +160,22 @@ class TestLoadConfig:
 
         # Should resolve to tmp_path
         assert config.root_path == tmp_path
+
+    def test_load_config_with_log_level_env(self, tmp_path, monkeypatch):
+        """Test loading LOG_LEVEL from environment variables."""
+        monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
+        monkeypatch.setenv("LOG_LEVEL", "ERROR")
+
+        config = load_config()
+
+        assert config.log_level == logging.ERROR
+
+    def test_load_config_with_invalid_log_level(self, tmp_path, monkeypatch):
+        """Test that invalid LOG_LEVEL raises ValueError."""
+        monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
+        monkeypatch.setenv("LOG_LEVEL", "INVALID_LEVEL")
+
+        with pytest.raises(ValueError) as exc_info:
+            load_config()
+
+        assert "LOG_LEVEL must be one of" in str(exc_info.value)

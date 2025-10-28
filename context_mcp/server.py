@@ -20,9 +20,6 @@ from context_mcp.tools.read import (
     read_file_tail,
     read_files,
 )
-from context_mcp.tools.guide import get_tool_usage_guide
-
-
 # Initialize FastMCP server
 mcp = FastMCP("context-mcp")
 
@@ -276,7 +273,9 @@ async def get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
     Returns:
         dict: content (str), metadata (dict), warnings (list, optional)
     """
-    return await get_tool_usage_guide(mcp, tool_names)
+    from context_mcp.tools.guide import get_tool_usage_guide as _impl
+
+    return await _impl(mcp, tool_names)
 
 
 # ============================================================================
@@ -286,16 +285,18 @@ async def get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
 
 def main():
     """Main entry point for uvx execution."""
-    # Setup logging
-    logger_instance = setup_logging()
-
     try:
-        # Load configuration
+        # Load configuration first to get log level
         cfg = load_config()
+
+        # Setup logging with configured level
+        logger_instance = setup_logging(level=cfg.log_level)
+
         logger_instance.info("Context MCP Server starting...")
         logger_instance.info(f"Project root: {cfg.root_path}")
         logger_instance.info(f"Search timeout: {cfg.search_timeout}s")
         logger_instance.info(f"Log retention: {cfg.log_retention_days} days")
+        logger_instance.info(f"Log level: {logging.getLevelName(cfg.log_level)}")
 
         # Run MCP server
         mcp.run()
