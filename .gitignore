@@ -176,3 +176,5 @@ uv.lock
 *.temp
 .tmp/
 .temp/
+
+pypi-token.txt

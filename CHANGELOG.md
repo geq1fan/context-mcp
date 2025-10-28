@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2025-10-28
+
+### Fixed
+- **Critical Bug**: Fixed `UnboundLocalError` in server startup when `PROJECT_ROOT` environment variable is missing
+  - The logger instance was not accessible in exception handlers, causing crashes
+  - Now properly handles configuration errors with clear error messages
+
+## [0.2.4] - 2025-10-28
+
+### Security
+- Version bump for security fixes
+
+## [0.2.3] - 2025-10-28
+
+### Added
+- **Configurable Log Levels**: Added `LOG_LEVEL` environment variable support
+  - Supports DEBUG, INFO, WARNING, ERROR, CRITICAL levels
+  - Default level changed from INFO to WARNING for cleaner output
+  - Configurable via environment variable `LOG_LEVEL=DEBUG`
+
+### Changed
+- **Default Log Level**: Changed from INFO to WARNING to reduce log noise
+- **Architecture**: Improved logging configuration to be configurable at startup
+
 ## [0.2.0] - 2025-10-05
 
 ### Added

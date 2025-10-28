@@ -25,12 +25,12 @@
   "mcpServers": {
     "frontend-project": {
       "command": "uvx",
-      "args": ["context-mcp"],
+      "args": ["context-mcp@0.2.5"],
       "env": { "PROJECT_ROOT": "/path/to/frontend" }
     },
     "backend-api": {
       "command": "uvx",
-      "args": ["context-mcp"],
+      "args": ["context-mcp@0.2.5"],
       "env": { "PROJECT_ROOT": "/path/to/backend" }
     }
   }
@@ -73,7 +73,7 @@
   "mcpServers": {
     "context-mcp": {
       "command": "uvx",
-      "args": ["context-mcp"],
+      "args": ["context-mcp@0.2.5"],
       "env": {
         "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
@@ -85,7 +85,7 @@
 或者：
 
 ```bash
-claude mcp add context-mcp --env PROJECT_ROOT="/absolute/path/to/your/project"  -- uvx context-mcp
+claude mcp add context-mcp --env PROJECT_ROOT="/absolute/path/to/your/project"  -- uvx context-mcp@0.2.5
 ```
 
 > **⚠️ 注意**：`PROJECT_ROOT`变量必须配置，否则服务无法启动。
@@ -143,7 +143,7 @@ sudo apt install fd-find
 
 ## 核心能力
 
-Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入分析任何项目的代码库。
+Context MCP 提供 **12 个 MCP 工具**，让 AI Agent 通过只读方式深入分析任何项目的代码库。
 
 > **使用场景示例**：假设你已配置 `PROJECT_ROOT=/path/to/my-web-app`，以下是实际使用方式。
 
@@ -218,6 +218,16 @@ Context MCP 提供 **11 个 MCP 工具**，让 AI Agent 通过只读方式深入
     ```
     👤 "这个项目最近一周改了哪些文件？"
     🤖 [使用 find_recently_modified_files] 显示12个文件，主要集中在 auth 模块
+    ```
+
+### 📋 指南工具（1 个）
+
+- **`get_tool_usage_guide`** - 获取所有 MCP 工具的完整使用文档
+  - **场景**：AI Agent 自主了解和选择最合适的工具
+  - **对话示例**：
+    ```
+    👤 "请先通过 get_tool_usage_guide 了解 context-mcp 提供的所有工具及其用途"
+    🤖 [使用 get_tool_usage_guide] 返回11个工具的完整文档：参数说明、返回格式、使用示例
     ```
 
 ### 📖 读取工具（4 个）
@@ -364,7 +374,7 @@ PROJECT_ROOT=$(pwd) uv run pytest
 PROJECT_ROOT=$(pwd) uv run pytest --cov=context_mcp
 ```
 
-**测试覆盖率**：237 个测试（232 通过 + 5 跳过），覆盖率 78%（运行 `PROJECT_ROOT=$(pwd) python -m pytest --cov=context_mcp`）
+**测试覆盖率**：240 个测试，覆盖率 77%（运行 `$env:PROJECT_ROOT = (Get-Location).Path; python -m pytest --cov=context_mcp`）
 
 ## 文档
 

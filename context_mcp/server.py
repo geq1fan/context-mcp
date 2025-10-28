@@ -285,6 +285,7 @@ async def get_tool_usage_guide(tool_names: list[str] | None = None) -> dict:
 
 def main():
     """Main entry point for uvx execution."""
+    logger_instance = None
     try:
         # Load configuration first to get log level
         cfg = load_config()
@@ -302,13 +303,17 @@ def main():
         mcp.run()
 
     except ValueError as e:
-        logger_instance.error(f"Configuration error: {e}")
+        if logger_instance:
+            logger_instance.error(f"Configuration error: {e}")
         print(f"ERROR: {e}")
         print("\nPlease set the PROJECT_ROOT environment variable.")
         print("Example: export PROJECT_ROOT=/path/to/your/project")
         return 1
     except Exception as e:
-        logger_instance.error(f"Server error: {e}", exc_info=True)
+        if logger_instance:
+            logger_instance.error(f"Server error: {e}", exc_info=True)
+        else:
+            print(f"Server error: {e}")
         return 1
 
     return 0
