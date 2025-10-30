@@ -18,12 +18,14 @@ class ProjectConfig:
         search_timeout: Search operation timeout in seconds
         log_retention_days: Log file retention period
         log_level: Logging level (integer constant from logging module)
+        enable_file_log: Whether to enable file logging (default: False)
     """
 
     root_path: Path
     search_timeout: int = 60
     log_retention_days: int = 7
     log_level: int = logging.WARNING
+    enable_file_log: bool = False
 
     def __post_init__(self):
         """Validate configuration after initialization."""
@@ -88,12 +90,16 @@ def load_config() -> ProjectConfig:
         valid_names = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         raise ValueError(f"LOG_LEVEL must be one of {valid_names}: {log_level_str}")
 
+    # ENABLE_FILE_LOG is optional (default: False)
+    enable_file_log = os.getenv("ENABLE_FILE_LOG", "false").lower() in ("true", "1", "yes")
+
     # Create and validate config
     return ProjectConfig(
         root_path=root_path,
         search_timeout=search_timeout,
         log_retention_days=7,  # Fixed per requirements
         log_level=log_level,
+        enable_file_log=enable_file_log,
     )
 
 

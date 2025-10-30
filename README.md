@@ -90,6 +90,62 @@ claude mcp add context-mcp --env PROJECT_ROOT="/absolute/path/to/your/project"  
 
 > **⚠️ 注意**：`PROJECT_ROOT`变量必须配置，否则服务无法启动。
 
+### 可选：日志配置
+
+Context MCP 支持灵活的日志配置，通过环境变量控制日志级别和输出方式：
+
+#### 日志级别 (LOG_LEVEL)
+
+控制日志详细程度，可选值：`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`（默认：`WARNING`）
+
+**使用场景：**
+
+```json
+{
+  "mcpServers": {
+    "context-mcp": {
+      "command": "uvx",
+      "args": ["context-mcp@0.2.5"],
+      "env": {
+        "PROJECT_ROOT": "/absolute/path/to/your/project",
+        "LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+#### 文件日志 (ENABLE_FILE_LOG)
+
+控制是否将日志输出到文件（默认：`false`，仅输出到 stderr）
+
+**启用文件日志：**
+
+```json
+{
+  "mcpServers": {
+    "context-mcp": {
+      "command": "uvx",
+      "args": ["context-mcp@0.2.5"],
+      "env": {
+        "PROJECT_ROOT": "/absolute/path/to/your/project",
+        "ENABLE_FILE_LOG": "true"
+      }
+    }
+  }
+}
+```
+
+**日志配置说明：**
+
+- **默认行为**：日志仅输出到 stderr（控制台），不会创建 `context-mcp.log` 文件
+- **启用文件日志后**：日志同时输出到 stderr 和 `context-mcp.log`，按天自动轮转，保留 7 天
+- **推荐配置**：
+  - 开发调试：`LOG_LEVEL=DEBUG`
+  - 生产环境：`LOG_LEVEL=WARNING`（默认），`ENABLE_FILE_LOG=false`（默认）
+  - 问题排查：`LOG_LEVEL=INFO` + `ENABLE_FILE_LOG=true`
+
+
 ### 可选：安装性能优化工具
 
 Context MCP 可以利用高性能命令行工具大幅提升搜索速度（**13 倍加速**），推荐安装：
