@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2025-01-03
+
+### Fixed
+- **Syntax Error**: Fixed f-string syntax error in server.py logging statement
+  - Changed nested double quotes to single quotes in f-string literal: `f"File logging: {'enabled' if ... else 'disabled'}"`
+  - Resolved Python syntax error that would prevent server startup
+
+## [0.2.7] - 2025-01-03
+
+### Fixed
+- **Bug Fix**: Version bump for bug fixes
+
 ## [0.2.6] - 2025-10-28
 
 ### Fixed

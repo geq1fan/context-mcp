@@ -299,7 +299,7 @@ def main():
         logger_instance.info(f"Search timeout: {cfg.search_timeout}s")
         logger_instance.info(f"Log retention: {cfg.log_retention_days} days")
         logger_instance.info(f"Log level: {logging.getLevelName(cfg.log_level)}")
-        logger_instance.info(f"File logging: {"enabled" if cfg.enable_file_log else "disabled"}")
+        logger_instance.info(f"File logging: {'enabled' if cfg.enable_file_log else 'disabled'}")
 
         # Run MCP server
         mcp.run()
